@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1024, height=600, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SHIV KAUSHALYA 7.0" HMI Display - Capacitive Touch Scrolling</title>
+  <link rel="stylesheet" href="../css/design-system.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Fixed 1024x600 Dashboard Grid Layout */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 230px 1fr 250px;
+      gap: var(--space-sm);
+      height: 100%;
+    }
+
+    .column-stack {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    /* Automotive Speedometer Gauge Visual Polish */
+    .gauge-wrapper {
+      width: 260px;
+      height: 260px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    .gauge-svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .gauge-bg-arc {
+      fill: none;
+      stroke: #1b212c;
+      stroke-width: 16;
+    }
+
+    .gauge-color-arc {
+      fill: none;
+      stroke: var(--accent-primary);
+      stroke-width: 16;
+      stroke-linecap: round;
+      stroke-dasharray: 603.185;
+      stroke-dashoffset: 603.185;
+      filter: drop-shadow(0 0 6px rgba(0, 229, 255, 0.4));
+    }
+
+    .needle-container {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0; left: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: rotate(-70deg);
+      will-change: transform;
+    }
+
+    .needle-pointer {
+      width: 6px;
+      height: 90px;
+      background: var(--accent-primary);
+      position: absolute;
+      top: 35px;
+      border-radius: 3px;
+      box-shadow: 0 0 10px var(--accent-primary);
+    }
+
+    .needle-center-cap {
+      width: 20px;
+      height: 20px;
+      background: var(--accent-primary);
+      border-radius: 50%;
+      z-index: 3;
+      border: 3px solid #000000;
+      box-shadow: 0 0 10px var(--accent-primary);
+    }
+
+    .gauge-center-info {
+      position: absolute;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 2;
+      margin-top: 10px;
+    }
+
+    /* Battery SOC Bar Graphic */
+    .soc-progress-track {
+      width: 100%;
+      height: 8px;
+      background: #1b212c;
+      border-radius: 4px;
+      margin-top: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .soc-progress-fill {
+      height: 100%;
+      width: 100%;
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+      transition: width 0.4s ease-out;
+    }
+
+    /* Charging Screen Grid */
+    .charging-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+      height: 100%;
+    }
+
+    /* Fault Screen Layout */
+    .faults-container {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      height: 100%;
+    }
+
+    .fault-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .fault-table th, .fault-table td {
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1.5px solid var(--border-color);
+      font-size: var(--font-body);
+    }
+
+    .fault-table th {
+      color: var(--text-secondary);
+      font-size: var(--font-label);
+      text-transform: uppercase;
+      font-weight: 800;
+      position: sticky;
+      top: 0;
+      background: #141820;
+      z-index: 2;
+    }
+
+    .fault-table td {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Settings Screen Grid */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+      height: 100%;
+    }
+
+    /* Info Screen Grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fixed 1024x600 DWIN HMI Container -->
+  <div class="hmi-display-container">
+
+    <!-- Top Header Bar -->
+    <header class="hmi-header">
+      <div class="hmi-brand">
+        <i data-lucide="tractor" style="color:var(--accent-primary); width:28px; height:28px;"></i>
+        <div>
+          <div class="hmi-brand-title">SHIV KAUSHALYA</div>
+          <div class="hmi-brand-subtitle">Electric Agriculture Vehicle (EAV-700)</div>
+        </div>
+      </div>
+      <div class="hmi-header-right">
+        <div class="hmi-header-clock" id="hmi-clock">14:30</div>
+        <div class="hmi-header-soc">
+          <i data-lucide="battery-charging" style="width:18px; height:18px;"></i>
+          <span id="header-soc-val">100%</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Views Canvas (480px height) -->
+    <main class="hmi-content">
+
+      <!-- SCREEN 1: MAIN DASHBOARD -->
+      <section id="view-dashboard" class="view-panel active">
+        <div class="dashboard-grid">
+          
+          <!-- Left Column Metrics -->
+          <div class="column-stack">
+            <div class="hmi-card">
+              <div class="hmi-card-header">
+                <span class="hmi-label">Battery SOC</span>
+                <i data-lucide="battery-charging" style="color:var(--success); width:20px; height:20px;"></i>
+              </div>
+              <div class="hmi-value"><span id="dash-soc">100</span><span class="hmi-unit">%</span></div>
+              <div class="soc-progress-track">
+                <div class="soc-progress-fill" id="soc-bar-fill"></div>
+              </div>
+            </div>
+
+            <div class="hmi-card">
+              <div class="hmi-card-header">
+                <span class="hmi-label">Battery Voltage</span>
+                <i data-lucide="zap" style="color:var(--accent-primary); width:20px; height:20px;"></i>
+              </div>
+              <div class="hmi-value"><span id="dash-voltage">350</span><span class="hmi-unit">V</span></div>
+            </div>
+
+            <div class="hmi-card">
+              <div class="hmi-card-header">
+                <span class="hmi-label">Battery Current</span>
+                <i data-lucide="activity" style="color:var(--accent-primary); width:20px; height:20px;"></i>
+              </div>
+              <div class="hmi-value"><span id="dash-current">40</span><span class="hmi-unit">A</span></div>
+            </div>
+
+            <div class="hmi-card">
+              <div class="hmi-card-header">
+                <span class="hmi-label">Est. Range</span>
+                <i data-lucide="map-pin" style="color:var(--success); width:20px; height:20px;"></i>
+              </div>
+              <div class="hmi-value"><span id="dash-range">100</span><span class="hmi-unit">km</span></div>
+            </div>
+          </div>
+
+          <!-- Center Automotive Speedometer Gauge -->
+          <div style="display:flex; flex-direction:column; justify-content:space-between; align-items:center;">
+            <div class="gauge-wrapper">
+              <svg class="gauge-svg" viewBox="0 0 240 240">
+                <circle class="gauge-bg-arc" cx="120" cy="120" r="96"></circle>
+                <circle id="gauge-arc" class="gauge-color-arc" cx="120" cy="120" r="96"></circle>
+              </svg>
+              <div class="needle-container" id="speed-needle">
+                <div class="needle-pointer"></div>
+                <div class="needle-center-cap"></div>
+              </div>
+              <div class="gauge-center-info">
+                <span class="hmi-label">Vehicle Speed</span>
+                <div style="font-family:var(--font-family-display); font-size:var(--font-hero); font-weight:900; color:#ffffff; font-variant-numeric:tabular-nums;" id="dash-speed">0</div>
+                <span class="hmi-unit">km/h</span>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:var(--space-sm); align-items:center; margin-bottom: 4px;">
+              <div class="status-pill success"><i data-lucide="leaf" style="width:14px; height:14px;"></i> ECO MODE</div>
+              <div class="status-pill accent">GEAR: F</div>
+              <div class="status-pill success">PTO: ON</div>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div class="column-stack">
+            <div class="hmi-card">
+              <div class="hmi-card-header">
+                <span class="hmi-label">Motor RPM</span>
+                <i data-lucide="cpu" style="color:var(--accent-primary); width:20px; height:20px;"></i>
+              </div>
+              <div class="hmi-value"><span id="dash-rpm">0</span><span class="hmi-unit">RPM</span></div>
+            </div>
+
+            <div class="hmi-card">
+              <div class="hmi-card-header">
+                <span class="hmi-label">Motor Temp</span>
+                <i data-lucide="thermometer" style="color:var(--warning); width:20px; height:20px;"></i>
+              </div>
+              <div class="hmi-value"><span id="dash-motor-temp">38</span><span class="hmi-unit">°C</span></div>
+            </div>
+
+            <div class="hmi-card">
+              <div class="hmi-card-header">
+                <span class="hmi-label">Controller Temp</span>
+                <i data-lucide="microchip" style="color:var(--accent-primary); width:20px; height:20px;"></i>
+              </div>
+              <div class="hmi-value"><span id="dash-ctrl-temp">36</span><span class="hmi-unit">°C</span></div>
+            </div>
+
+            <div class="hmi-card">
+              <div class="hmi-card-header">
+                <span class="hmi-label">Battery Temp</span>
+                <i data-lucide="thermometer-snowflake" style="color:var(--success); width:20px; height:20px;"></i>
+              </div>
+              <div class="hmi-value"><span id="dash-bat-temp">35</span><span class="hmi-unit">°C</span></div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- SCREEN 2: CHARGING SCREEN -->
+      <section id="view-charging" class="view-panel">
+        <div class="section-header">
+          <i data-lucide="battery-charging" style="width:20px; height:20px;"></i> Charging Station & BMS Monitor
+        </div>
+        <div class="charging-grid">
+          <div class="hmi-card">
+            <div class="hmi-card-header">
+              <span class="hmi-label">Charger Status</span>
+              <span class="status-pill success" id="charge-status-pill">Fast Charging</span>
+            </div>
+            
+            <div style="display:flex; align-items:center; justify-content:center; padding: 25px 0;">
+              <div style="text-align:center;">
+                <div class="hmi-label">Current Battery SOC</div>
+                <div style="font-family:var(--font-family-display); font-size:56px; color:var(--success); font-weight:900; font-variant-numeric:tabular-nums;" id="charging-soc-display">85%</div>
+                <span class="hmi-unit">Target: 100%</span>
+              </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; gap:var(--space-md);">
+              <button class="hmi-btn danger" id="btn-stop-charge" style="flex:1;"><i data-lucide="square" style="width:18px; height:18px;"></i> Stop</button>
+              <button class="hmi-btn success" id="btn-start-charge" style="flex:1;"><i data-lucide="play" style="width:18px; height:18px;"></i> Fast Charge</button>
+            </div>
+          </div>
+
+          <div class="column-stack">
+            <div class="hmi-card">
+              <div class="hmi-card-header">
+                <span class="hmi-label">Charging Voltage</span>
+                <i data-lucide="zap" style="color:var(--accent-primary); width:20px; height:20px;"></i>
+              </div>
+              <div class="hmi-value">380.4<span class="hmi-unit">V</span></div>
+            </div>
+
+            <div class="hmi-card">
+              <div class="hmi-card-header">
+                <span class="hmi-label">Charging Current</span>
+                <i data-lucide="activity" style="color:var(--accent-primary); width:20px; height:20px;"></i>
+              </div>
+              <div class="hmi-value">62.5<span class="hmi-unit">A</span></div>
+            </div>
+
+            <div class="hmi-card">
+              <div class="hmi-card-header">
+                <span class="hmi-label">Power Delivered</span>
+                <i data-lucide="power" style="color:var(--success); width:20px; height:20px;"></i>
+              </div>
+              <div class="hmi-value">23.8<span class="hmi-unit">kW</span></div>
+            </div>
+
+            <div class="hmi-card">
+              <div class="hmi-card-header">
+                <span class="hmi-label">Time Remaining</span>
+                <i data-lucide="clock" style="color:var(--text-secondary); width:20px; height:20px;"></i>
+              </div>
+              <div class="hmi-value">00:18<span class="hmi-unit">mins</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 3: FAULT DIAGNOSTICS SCREEN (WITH TOUCH MOMENTUM SCROLLING) -->
+      <section id="view-faults" class="view-panel">
+        <div class="section-header">
+          <i data-lucide="shield-alert" style="width:20px; height:20px;"></i> Vehicle Diagnostics & Fault Log
+        </div>
+        <div class="faults-container">
+          <div class="hmi-card" style="flex:1; padding: 6px 12px;">
+            <div class="hmi-card-header" style="margin-bottom:8px;">
+              <span class="hmi-label">Active System DTCs</span>
+              <button class="hmi-btn" id="btn-clear-faults"><i data-lucide="rotate-ccw" style="width:18px; height:18px;"></i> Clear Faults</button>
+            </div>
+            
+            <!-- TOUCH SCROLLABLE CONTAINER WITH HIDDEN SCROLLBAR -->
+            <div class="fault-table-wrapper touch-scroll-y">
+              <table class="fault-table">
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Subsystem</th>
+                    <th>Description</th>
+                    <th>Severity</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>DTC-1024</td>
+                    <td>Thermal Control</td>
+                    <td>Battery Coolant Pressure Normal</td>
+                    <td><span class="status-pill success">INFO</span></td>
+                    <td>ACTIVE</td>
+                  </tr>
+                  <tr>
+                    <td>DTC-0842</td>
+                    <td>Tire System</td>
+                    <td>Rear Left Tire Pressure Low (1.8 Bar)</td>
+                    <td><span class="status-pill danger pulse-alert">CRITICAL</span></td>
+                    <td>PENDING</td>
+                  </tr>
+                  <tr>
+                    <td>DTC-0112</td>
+                    <td>BMS Node 2</td>
+                    <td>Cell Voltage Balance Optimal</td>
+                    <td><span class="status-pill success">OK</span></td>
+                    <td>CLEARED</td>
+                  </tr>
+                  <tr>
+                    <td>DTC-0440</td>
+                    <td>Motor Controller</td>
+                    <td>Inverter Temperature Normal (42°C)</td>
+                    <td><span class="status-pill success">OK</span></td>
+                    <td>ACTIVE</td>
+                  </tr>
+                  <tr>
+                    <td>DTC-0915</td>
+                    <td>CAN Gateway</td>
+                    <td>Telemetry Bus Packet Rate 100 Hz</td>
+                    <td><span class="status-pill success">INFO</span></td>
+                    <td>ACTIVE</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:var(--space-md);">
+            <div class="hmi-card">
+              <span class="hmi-label">BMS Health</span>
+              <span class="status-pill success" style="margin-top:6px;">100% OK</span>
+            </div>
+            <div class="hmi-card">
+              <span class="hmi-label">MCU Status</span>
+              <span class="status-pill success" style="margin-top:6px;">NORMAL</span>
+            </div>
+            <div class="hmi-card">
+              <span class="hmi-label">CAN Bus</span>
+              <span class="status-pill success" style="margin-top:6px;">CONNECTED</span>
+            </div>
+            <div class="hmi-card">
+              <span class="hmi-label">Safety Interlock</span>
+              <span class="status-pill success" style="margin-top:6px;">ENGAGED</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 4: SETTINGS SCREEN (TOUCH SCROLLABLE) -->
+      <section id="view-settings" class="view-panel">
+        <div class="section-header">
+          <i data-lucide="sliders" style="width:20px; height:20px;"></i> System Settings & Touch Controls
+        </div>
+        <div class="settings-scroll-container touch-scroll-y">
+          <div class="settings-grid">
+            <div class="hmi-card">
+              <div class="hmi-card-header">
+                <span class="hmi-label">Display Brightness</span>
+                <span class="hmi-value" style="font-size:20px;" id="brightness-val">80%</span>
+              </div>
+              <div class="hmi-slider-container" style="margin-top:14px;">
+                <i data-lucide="sun" style="width:22px; height:22px; color:var(--text-secondary);"></i>
+                <input type="range" class="hmi-slider" min="10" max="100" value="80" id="brightness-slider">
+              </div>
+
+              <div class="hmi-toggle-wrapper" style="margin-top:14px;">
+                <span class="hmi-label">Auto Screen Timeout</span>
+                <label class="hmi-toggle">
+                  <input type="checkbox" checked>
+                  <span class="hmi-toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="hmi-toggle-wrapper">
+                <span class="hmi-label">Touch Beep Feedback</span>
+                <label class="hmi-toggle">
+                  <input type="checkbox" checked>
+                  <span class="hmi-toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="hmi-card">
+              <div class="hmi-card-header">
+                <span class="hmi-label">Regenerative Braking Level</span>
+              </div>
+              <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:var(--space-xs); margin-top:14px;">
+                <button class="hmi-btn" style="min-width:auto;">OFF</button>
+                <button class="hmi-btn" style="min-width:auto;">LVL 1</button>
+                <button class="hmi-btn primary" style="min-width:auto;">LVL 2</button>
+                <button class="hmi-btn" style="min-width:auto;">LVL 3</button>
+              </div>
+
+              <div class="hmi-toggle-wrapper" style="margin-top:14px;">
+                <span class="hmi-label">Max Speed Limiter (40 km/h)</span>
+                <label class="hmi-toggle">
+                  <input type="checkbox">
+                  <span class="hmi-toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="hmi-toggle-wrapper">
+                <span class="hmi-label">Creep Drive Mode</span>
+                <label class="hmi-toggle">
+                  <input type="checkbox" checked>
+                  <span class="hmi-toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 5: INFO SCREEN -->
+      <section id="view-info" class="view-panel">
+        <div class="section-header">
+          <i data-lucide="info" style="width:20px; height:20px;"></i> Vehicle System Specifications
+        </div>
+        <div class="info-grid">
+          <div class="hmi-card">
+            <div class="hmi-card-header">
+              <span class="hmi-label">Vehicle Identity</span>
+              <i data-lucide="tractor" style="color:var(--accent-primary); width:22px; height:22px;"></i>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:12px; margin-top:14px; font-size:var(--font-body);">
+              <div><span class="hmi-label">Model:</span> SHIV KAUSHALYA EAV-700</div>
+              <div><span class="hmi-label">VIN Serial:</span> SK-EV-2026-78942</div>
+              <div><span class="hmi-label">Firmware Version:</span> v3.4.12-PROD</div>
+              <div><span class="hmi-label">MCU Hardware:</span> DWIN-70-IPS</div>
+            </div>
+          </div>
+
+          <div class="hmi-card">
+            <div class="hmi-card-header">
+              <span class="hmi-label">Telemetry Stats</span>
+              <i data-lucide="bar-chart-3" style="color:var(--success); width:22px; height:22px;"></i>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:12px; margin-top:14px; font-size:var(--font-body);">
+              <div><span class="hmi-label">Total Odometer:</span> 4,520 km</div>
+              <div><span class="hmi-label">Operating Hours:</span> 384 hrs</div>
+              <div><span class="hmi-label">Total Energy:</span> 1,240 kWh</div>
+              <div><span class="hmi-label">Next Service:</span> In 48 Days</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="hmi-navbar">
+      <button class="nav-tab active" onclick="switchTab('dashboard')">
+        <i data-lucide="layout-dashboard"></i>
+        <span class="nav-tab-label">Dashboard</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('charging')">
+        <i data-lucide="battery-charging"></i>
+        <span class="nav-tab-label">Charging</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('faults')">
+        <i data-lucide="shield-alert"></i>
+        <span class="nav-tab-label">Faults</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('settings')">
+        <i data-lucide="sliders"></i>
+        <span class="nav-tab-label">Settings</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('info')">
+        <i data-lucide="info"></i>
+        <span class="nav-tab-label">Info</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    // Tab Navigation
+    function switchTab(tabId) {
+      const activePanel = document.querySelector('.view-panel.active');
+      const targetPanel = document.getElementById(`view-${tabId}`);
+
+      if (activePanel === targetPanel) return;
+
+      document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+
+      if (activePanel) {
+        activePanel.style.opacity = '0';
+        activePanel.style.transform = 'translateY(6px)';
+        setTimeout(() => {
+          activePanel.classList.remove('active');
+          if (targetPanel) {
+            targetPanel.classList.add('active');
+            void targetPanel.offsetWidth;
+            targetPanel.style.opacity = '1';
+            targetPanel.style.transform = 'translateY(0)';
+          }
+        }, 150);
+      } else if (targetPanel) {
+        targetPanel.classList.add('active');
+        targetPanel.style.opacity = '1';
+        targetPanel.style.transform = 'translateY(0)';
+      }
+
+      const activeBtn = Array.from(document.querySelectorAll('.nav-tab')).find(btn => 
+        btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tabId)
+      );
+      if (activeBtn) activeBtn.classList.add('active');
+    }
+
+    // Real-Time Clock
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('hmi-clock').textContent = `${h}:${m}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Brightness Slider
+    const brightnessSlider = document.getElementById('brightness-slider');
+    const brightnessVal = document.getElementById('brightness-val');
+    if (brightnessSlider && brightnessVal) {
+      brightnessSlider.addEventListener('input', (e) => {
+        brightnessVal.textContent = `${e.target.value}%`;
+      });
+    }
+
+    /* AUTOMOTIVE SPEEDOMETER ANIMATION ENGINE */
+    const MIN_SPEED = 0; const MAX_SPEED = 50; const MIN_ANGLE = -70; const MAX_ANGLE = 110;
+    const CIRCUMFERENCE = 603.185; const ARC_FILL_LENGTH = 402.12; const OFFSET_EMPTY = CIRCUMFERENCE;
+
+    const gaugeArc = document.getElementById('gauge-arc');
+    const gaugeNeedle = document.getElementById('speed-needle');
+    const speedText = document.getElementById('dash-speed');
+    const rpmText = document.getElementById('dash-rpm');
+
+    let currentSpeedVal = 0; let targetSpeedVal = 0; let animationFrameId = null; let animStartTime = null; let animStartSpeed = 0;
+
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+    function renderGauge(speed) {
+      const fraction = Math.max(0, Math.min(1, (speed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED)));
+      const angle = MIN_ANGLE + fraction * (MAX_ANGLE - MIN_ANGLE);
+      if (gaugeNeedle) gaugeNeedle.style.transform = `rotate(${angle}deg)`;
+      const offset = OFFSET_EMPTY - fraction * ARC_FILL_LENGTH;
+      if (gaugeArc) gaugeArc.style.strokeDashoffset = offset;
+      const roundedSpeed = Math.round(speed);
+      if (speedText) speedText.textContent = roundedSpeed;
+      if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+    }
+
+    function updateSpeed(newSpeed, duration = 450) {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      animStartSpeed = currentSpeedVal;
+      targetSpeedVal = Math.max(MIN_SPEED, Math.min(MAX_SPEED, newSpeed));
+      animStartTime = performance.now();
+
+      function step(currentTime) {
+        const elapsed = currentTime - animStartTime;
+        const progress = Math.min(1, elapsed / duration);
+        const easedProgress = easeOutCubic(progress);
+        currentSpeedVal = animStartSpeed + (targetSpeedVal - animStartSpeed) * easedProgress;
+        renderGauge(currentSpeedVal);
+        if (progress < 1) {
+          animationFrameId = requestAnimationFrame(step);
+        } else {
+          currentSpeedVal = targetSpeedVal;
+          renderGauge(targetSpeedVal);
+          animationFrameId = null;
+        }
+      }
+      animationFrameId = requestAnimationFrame(step);
+    }
+
+    renderGauge(0);
+    const speedPoints = [0, 15, 28, 42, 35, 48, 20, 0];
+    let pointIndex = 0;
+    setInterval(() => {
+      pointIndex = (pointIndex + 1) % speedPoints.length;
+      updateSpeed(speedPoints[pointIndex], 600);
+    }, 2200);
+  </script>
+</body>
+</html>

@@ -1,0 +1,571 @@
+/* =========================================================
+   SHIV KAUSHALYA 7.0" HMI DISPLAY - UNIFIED DESIGN SYSTEM
+   Fixed 1024x600 px Canvas - Embedded Hardware Optimized
+   Dark Theme - Capacitive Touch Momentum Scrolling Enabled
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700;800&display=swap');
+
+:root {
+  /* 1. Color Palette (High-Contrast 24-bit True Color IPS) */
+  --bg-primary: #000000;
+  --bg-surface: #080a0f;
+  
+  /* Premium Dark Charcoal Gradients */
+  --bg-card-grad: linear-gradient(145deg, #181d26, #0e1218);
+  --bg-card-active-grad: linear-gradient(145deg, #222936, #141822);
+  --bg-header-grad: linear-gradient(180deg, #0d1017, #06080c);
+  --bg-nav-grad: linear-gradient(0deg, #0d1017, #06080c);
+
+  /* Borders & Shadows with Ambient Glow */
+  --border-color: rgba(255, 255, 255, 0.12);
+  --border-accent: #00e5ff;
+  --border-highlight: rgba(255, 255, 255, 0.08);
+
+  /* High-Contrast Status Accents */
+  --accent-primary: #00e5ff;        /* Ultra-bright Cyan */
+  --accent-glow: rgba(0, 229, 255, 0.18);
+  --success: #00e676;               /* Ultra-bright Green */
+  --success-glow: rgba(0, 230, 118, 0.18);
+  --warning: #ff9100;               /* Bright Amber/Orange */
+  --warning-glow: rgba(255, 145, 0, 0.18);
+  --danger: #ff1744;                /* Bright Red */
+  --danger-glow: rgba(255, 23, 68, 0.25);
+
+  /* High-Contrast Typography Colors */
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  /* Typography Scale */
+  --font-family-sans: 'Rajdhani', sans-serif;
+  --font-family-display: 'Orbitron', monospace;
+
+  --font-size-xs: 12px;
+  --font-label: 13px;
+  --font-body: 16px;
+  --font-header: 18px;
+  --font-title: 22px;
+  --font-value: 30px;
+  --font-hero: 60px;
+
+  /* Spacing Scale */
+  --space-xs: 6px;
+  --space-sm: 10px;
+  --space-md: 14px;
+  --space-lg: 18px;
+  --space-xl: 26px;
+
+  /* Component Properties */
+  --touch-target-min: 48px;
+  --radius-card: 14px;
+  --radius-sm: 8px;
+  --radius-full: 9999px;
+  --shadow-card: 0 6px 16px rgba(0, 0, 0, 0.8), inset 0 1px 0 var(--border-highlight);
+  --shadow-accent-glow: 0 0 16px var(--accent-glow);
+}
+
+/* Base Reset & Global Settings */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family-sans);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 1024px;
+  height: 600px;
+  max-width: 1024px;
+  max-height: 600px;
+  overflow: hidden; /* Outer frame lock */
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Fixed 1024x600 HMI Display Container */
+.hmi-display-container {
+  width: 1024px;
+  height: 600px;
+  background: var(--bg-surface);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Top Header Bar (Height: 56px) */
+.hmi-header {
+  height: 56px;
+  background: var(--bg-header-grad);
+  border-bottom: 2px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--space-lg);
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.hmi-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.hmi-brand-title {
+  font-family: var(--font-family-display);
+  font-size: var(--font-header);
+  font-weight: 800;
+  color: var(--accent-primary);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px var(--accent-glow);
+}
+
+.hmi-brand-subtitle {
+  font-size: var(--font-label);
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.hmi-header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.hmi-header-clock {
+  font-family: var(--font-family-display);
+  font-size: var(--font-title);
+  font-weight: 800;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.hmi-header-soc {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background: rgba(0, 230, 118, 0.12);
+  border: 1.5px solid var(--success);
+  color: var(--success);
+  padding: 4px 14px;
+  border-radius: var(--radius-full);
+  font-weight: 800;
+  height: 40px;
+  box-shadow: 0 0 12px var(--success-glow);
+}
+
+.hmi-header-soc span {
+  font-family: var(--font-family-display);
+  font-size: var(--font-body);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Main Content Area (Fixed Height 480px) - Primary Touch Scroll Container */
+.hmi-content {
+  flex: 1;
+  padding: var(--space-md);
+  overflow-y: auto;              /* Scroll when content exceeds 480px */
+  overflow-x: hidden;
+  position: relative;
+  height: 480px;
+  -webkit-overflow-scrolling: touch; /* Momentum scrolling on capacitive touch */
+  touch-action: pan-y;              /* Allow vertical swipe only */
+  scrollbar-width: none;            /* Firefox hide scrollbar */
+  -ms-overflow-style: none;         /* IE/Edge hide scrollbar */
+}
+
+/* Hide scrollbar visually while keeping full touch scroll functionality */
+.hmi-content::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Screen View Transition Animation */
+.view-panel {
+  display: none;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+.view-panel.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Section Headers */
+.section-header {
+  font-family: var(--font-family-display);
+  font-size: var(--font-header);
+  font-weight: 800;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: var(--space-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 6px;
+}
+
+/* =========================================================
+   TOUCH SCROLLING UTILITY CLASSES (CAPACITIVE PAN-Y TOUCH)
+   ========================================================= */
+
+.touch-scroll-y {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch; /* Momentum scrolling */
+  touch-action: pan-y !important;    /* Enable vertical touch swipe */
+  scrollbar-width: none;              /* Firefox hide scrollbar */
+  -ms-overflow-style: none;           /* IE/Edge hide scrollbar */
+}
+
+/* Hide scrollbar visually while keeping full touch scroll functionality */
+.touch-scroll-y::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Scrollable Container Sizing */
+.fault-table-wrapper {
+  max-height: 280px;
+  width: 100%;
+}
+
+.settings-scroll-container {
+  max-height: 420px;
+  width: 100%;
+}
+
+/* Card Components */
+.hmi-card {
+  background: var(--bg-card-grad);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-card);
+  padding: 12px 16px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  transition: transform 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out;
+  animation: card-entrance 0.4s ease-out backwards;
+}
+
+@keyframes card-entrance {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.column-stack .hmi-card:nth-child(1) { animation-delay: 40ms; }
+.column-stack .hmi-card:nth-child(2) { animation-delay: 80ms; }
+.column-stack .hmi-card:nth-child(3) { animation-delay: 120ms; }
+.column-stack .hmi-card:nth-child(4) { animation-delay: 160ms; }
+
+.hmi-card:active {
+  background: var(--bg-card-active-grad);
+  border-color: var(--accent-primary);
+  transform: scale(0.985);
+  box-shadow: var(--shadow-accent-glow), inset 0 1px 0 var(--border-highlight);
+}
+
+.hmi-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.hmi-label {
+  font-size: var(--font-label);
+  color: var(--text-secondary);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.hmi-value {
+  font-family: var(--font-family-display);
+  font-size: var(--font-value);
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+}
+
+.hmi-unit {
+  font-size: var(--font-body);
+  color: var(--text-secondary);
+  font-weight: 700;
+  margin-left: 3px;
+}
+
+/* Status Badges & Pills */
+.status-pill {
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-label);
+  font-weight: 800;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.5px;
+}
+
+.status-pill.success {
+  background: rgba(0, 230, 118, 0.15);
+  border: 1.5px solid var(--success);
+  color: var(--success);
+  box-shadow: 0 0 10px var(--success-glow);
+}
+
+.status-pill.warning {
+  background: rgba(255, 145, 0, 0.15);
+  border: 1.5px solid var(--warning);
+  color: var(--warning);
+  box-shadow: 0 0 10px var(--warning-glow);
+}
+
+.status-pill.danger {
+  background: rgba(255, 23, 68, 0.15);
+  border: 1.5px solid var(--danger);
+  color: var(--danger);
+  box-shadow: 0 0 10px var(--danger-glow);
+}
+
+.status-pill.danger.pulse-alert {
+  animation: critical-pulse 1.8s infinite ease-in-out;
+}
+
+@keyframes critical-pulse {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.75; transform: scale(1.03); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.status-pill.accent {
+  background: rgba(0, 229, 255, 0.15);
+  border: 1.5px solid var(--accent-primary);
+  color: var(--accent-primary);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* Touch Buttons (Min height 48px, Touch Action Manipulation) */
+.hmi-btn {
+  min-height: var(--touch-target-min);
+  min-width: 100px;
+  background: linear-gradient(145deg, #222a36, #161c24);
+  border: 1.5px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-body);
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  text-transform: uppercase;
+  touch-action: manipulation;
+  box-shadow: inset 0 1px 0 var(--border-highlight);
+  transition: transform 0.1s ease, filter 0.1s ease;
+}
+
+.hmi-btn:active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #000000;
+  transform: scale(0.97);
+  filter: brightness(1.2);
+}
+
+.hmi-btn.primary {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #000000;
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.hmi-btn.primary:active {
+  background: #00b8d4;
+}
+
+.hmi-btn.danger {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #ffffff;
+  box-shadow: 0 0 12px var(--danger-glow);
+}
+
+.hmi-btn.danger:active {
+  background: #d50000;
+}
+
+.hmi-btn.success {
+  background: var(--success);
+  border-color: var(--success);
+  color: #000000;
+  box-shadow: 0 0 12px var(--success-glow);
+}
+
+.hmi-btn.success:active {
+  background: #00c853;
+}
+
+/* Touch Toggle Switch (60x34px) */
+.hmi-toggle-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-xs) 0;
+  min-height: 48px;
+}
+
+.hmi-toggle {
+  position: relative;
+  width: 60px;
+  height: 34px;
+  display: inline-block;
+  touch-action: manipulation;
+}
+
+.hmi-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.hmi-toggle-slider {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #242c38;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-full);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.hmi-toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 24px;
+  width: 24px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.hmi-toggle input:checked + .hmi-toggle-slider {
+  background-color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.hmi-toggle input:checked + .hmi-toggle-slider:before {
+  transform: translateX(26px);
+  background-color: #000000;
+}
+
+/* Touch Range Slider (Smooth 28px Thumb) */
+.hmi-slider-container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  min-height: 48px;
+  touch-action: pan-x;
+}
+
+.hmi-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 10px;
+  border-radius: 5px;
+  background: #242c38;
+  outline: none;
+  border: 1px solid var(--border-color);
+}
+
+.hmi-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 10px var(--accent-primary);
+}
+
+/* Bottom HMI Navigation Bar (Fixed 64px Height) */
+.hmi-navbar {
+  height: 64px;
+  background: var(--bg-nav-grad);
+  border-top: 2px solid var(--border-color);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  z-index: 10;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.nav-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  touch-action: manipulation;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.nav-tab i {
+  width: 24px;
+  height: 24px;
+}
+
+.nav-tab-label {
+  font-size: var(--font-label);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.nav-tab:active, .nav-tab.active {
+  color: var(--accent-primary);
+  background: rgba(0, 229, 255, 0.12);
+}
+
+.nav-tab.active {
+  border-top: 3px solid var(--accent-primary);
+}
