@@ -203,7 +203,8 @@ html, body {
 }
 
 .view-panel.active {
-  display: block;
+  display: flex;
+  flex-direction: column;
   opacity: 1;
   transform: translateY(0);
 }
@@ -251,7 +252,9 @@ html, body {
 }
 
 .settings-scroll-container {
-  max-height: 420px;
+  flex: 1;
+  min-height: 0;
+  max-height: none;
   width: 100%;
 }
 
