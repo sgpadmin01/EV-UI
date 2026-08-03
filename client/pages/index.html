@@ -174,12 +174,319 @@
       gap: var(--space-md);
       height: 100%;
     }
+
+    /* =========================================================
+       WELCOME / SPLASH SCREEN
+       ========================================================= */
+    .hmi-splash {
+      position: absolute;
+      inset: 0;
+      z-index: 200;
+      background: radial-gradient(ellipse at 50% 40%, #10151d 0%, #04060a 72%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      overflow: hidden;
+      transition: opacity 0.45s ease-out;
+    }
+    .hmi-splash.gone {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .splash-logo {
+      color: var(--accent-primary);
+      filter: drop-shadow(0 0 20px var(--accent-glow));
+      animation: splash-logo-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    }
+    @keyframes splash-logo-in {
+      from { opacity: 0; transform: scale(0.4) rotate(-10deg); }
+      to { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+    .splash-brand {
+      font-family: var(--font-family-display);
+      font-size: var(--font-title);
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      animation: splash-fade 0.8s ease-out 0.25s backwards;
+    }
+    .splash-brand span {
+      color: var(--accent-primary);
+      text-shadow: 0 0 14px var(--accent-glow);
+    }
+    .splash-sub {
+      font-size: var(--font-label);
+      color: var(--text-secondary);
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      animation: splash-fade 0.8s ease-out 0.45s backwards;
+    }
+    @keyframes splash-fade {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .splash-progress {
+      width: 280px;
+      height: 6px;
+      background: #141a24;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin-top: 10px;
+      animation: splash-fade 0.8s ease-out 0.6s backwards;
+    }
+    .splash-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-primary);
+      box-shadow: 0 0 12px var(--accent-primary);
+      transition: width 0.25s ease-out;
+    }
+    .splash-status {
+      font-family: var(--font-family-display);
+      font-size: var(--font-xs);
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    /* =========================================================
+       SIMPLIFIED DASHBOARD
+       ========================================================= */
+    .dash-left, .dash-right {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      justify-content: space-between;
+    }
+    .dash-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      min-width: 0;
+    }
+    .dash-card {
+      background: var(--bg-card-grad);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-card);
+      padding: 10px 14px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+      min-height: 0;
+    }
+    .dash-card .hmi-label { margin-bottom: 1px; }
+    .dash-value {
+      font-family: var(--font-family-display);
+      font-size: var(--font-value);
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.5px;
+    }
+    .dash-soc-num { font-size: 46px; }
+    .dash-meta {
+      font-size: var(--font-xs);
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .dash-trip-btn {
+      margin-top: 8px;
+      align-self: flex-start;
+      min-height: 40px;
+      min-width: 110px;
+    }
+    .dash-batt-metrics {
+      display: flex;
+      gap: var(--space-md);
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-color);
+    }
+    .dash-batt-metric { flex: 1; }
+    .dash-temps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-xs);
+      margin-top: 8px;
+    }
+    .dash-temp-chip {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 8px 4px;
+    }
+    .dash-temp-chip .temp-label {
+      font-size: var(--font-xs);
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .dash-temp-chip .temp-value {
+      font-family: var(--font-family-display);
+      font-size: var(--font-body);
+      font-weight: 800;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+    .dash-pills {
+      display: flex;
+      gap: var(--space-sm);
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    /* =========================================================
+       HAZARD / WARNING SCREEN
+       ========================================================= */
+    .hmi-hazard-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 23, 68, 0.12);
+      border: 1.5px solid var(--danger);
+      color: var(--danger);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-weight: 800;
+      font-size: var(--font-label);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      min-height: 40px;
+      cursor: pointer;
+      animation: critical-pulse 2.2s infinite;
+    }
+    .hmi-hazard-btn.active {
+      background: var(--danger);
+      color: #ffffff;
+      animation: none;
+    }
+    .hazard-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 150;
+      background: radial-gradient(ellipse at center, #3a0505 0%, #150202 72%);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .hazard-overlay.active { display: flex; }
+    .hazard-topbar {
+      height: 56px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-lg);
+      background: rgba(255, 23, 68, 0.16);
+      border-bottom: 2px solid var(--danger);
+    }
+    .hazard-title {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-family: var(--font-family-display);
+      font-size: var(--font-header);
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .hazard-alert {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--danger);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: var(--font-label);
+      padding: 4px 14px;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      animation: critical-pulse 1.4s infinite;
+    }
+    .hazard-list {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    .hazard-list::-webkit-scrollbar { display: none; }
+    .hazard-card {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      background: linear-gradient(145deg, rgba(255, 23, 68, 0.16), rgba(30, 8, 8, 0.6));
+      border: 2px solid var(--danger);
+      border-radius: var(--radius-card);
+      padding: 14px 16px;
+      box-shadow: 0 0 18px var(--danger-glow);
+    }
+    .hazard-card.warning {
+      background: linear-gradient(145deg, rgba(255, 145, 0, 0.16), rgba(30, 20, 6, 0.6));
+      border-color: var(--warning);
+      box-shadow: 0 0 18px var(--warning-glow);
+    }
+    .hazard-icon { flex-shrink: 0; }
+    .hazard-code {
+      font-family: var(--font-family-display);
+      font-size: var(--font-title);
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+    }
+    .hazard-desc { font-size: var(--font-body); color: #ffd9de; }
+    .hazard-desc.warning { color: #ffe3bd; }
+    .hazard-severity { margin-left: auto; }
+    .hazard-footer {
+      height: 56px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.4);
+      border-top: 1px solid rgba(255, 23, 68, 0.3);
+    }
   </style>
 </head>
 <body>
 
   <!-- Fixed 1024x600 DWIN HMI Container -->
   <div class="hmi-display-container">
+
+    <!-- Welcome / Splash Screen -->
+    <div class="hmi-splash" id="hmi-splash">
+      <i data-lucide="tractor" class="splash-logo" style="width:84px; height:84px;"></i>
+      <div class="splash-brand">SHIV <span>KAUSHALYA</span></div>
+      <div class="splash-sub">EAV-700 Electric Agriculture Vehicle</div>
+      <div class="splash-progress">
+        <div class="splash-progress-fill" id="splash-progress"></div>
+      </div>
+      <div class="splash-status" id="splash-status">INITIALIZING SYSTEMS</div>
+    </div>
 
     <!-- Top Header Bar -->
     <header class="hmi-header">
@@ -191,6 +498,9 @@
         </div>
       </div>
       <div class="hmi-header-right">
+        <button class="hmi-hazard-btn" id="hazard-btn" onclick="toggleHazard(true)">
+          <i data-lucide="shield-alert" style="width:16px; height:16px;"></i> Hazard
+        </button>
         <div class="hmi-header-clock" id="hmi-clock">14:30</div>
         <div class="hmi-header-soc">
           <i data-lucide="battery-charging" style="width:18px; height:18px;"></i>
@@ -205,47 +515,34 @@
       <!-- SCREEN 1: MAIN DASHBOARD -->
       <section id="view-dashboard" class="view-panel active">
         <div class="dashboard-grid">
-          
-          <!-- Left Column Metrics -->
-          <div class="column-stack">
-            <div class="hmi-card">
-              <div class="hmi-card-header">
-                <span class="hmi-label">Battery SOC</span>
-                <i data-lucide="battery-charging" style="color:var(--success); width:20px; height:20px;"></i>
-              </div>
-              <div class="hmi-value"><span id="dash-soc">100</span><span class="hmi-unit">%</span></div>
-              <div class="soc-progress-track">
-                <div class="soc-progress-fill" id="soc-bar-fill"></div>
-              </div>
+
+          <!-- Left: Distance & Efficiency -->
+          <div class="dash-left">
+            <div class="dash-card">
+              <span class="hmi-label">Odometer</span>
+              <div class="dash-value"><span id="dash-odometer">4,520.0</span><span class="hmi-unit">km</span></div>
+              <span class="dash-meta">Total Distance Travelled</span>
             </div>
 
-            <div class="hmi-card">
-              <div class="hmi-card-header">
-                <span class="hmi-label">Battery Voltage</span>
-                <i data-lucide="zap" style="color:var(--accent-primary); width:20px; height:20px;"></i>
-              </div>
-              <div class="hmi-value"><span id="dash-voltage">350</span><span class="hmi-unit">V</span></div>
+            <div class="dash-card">
+              <span class="hmi-label">Trip Meter</span>
+              <div class="dash-value"><span id="dash-trip">0.0</span><span class="hmi-unit">km</span></div>
+              <button class="hmi-btn dash-trip-btn" onclick="resetTrip()">
+                <i data-lucide="rotate-ccw" style="width:14px; height:14px;"></i> Reset
+              </button>
             </div>
 
-            <div class="hmi-card">
-              <div class="hmi-card-header">
-                <span class="hmi-label">Battery Current</span>
-                <i data-lucide="activity" style="color:var(--accent-primary); width:20px; height:20px;"></i>
+            <div class="dash-card">
+              <span class="hmi-label">Efficiency</span>
+              <div class="dash-value"><span id="dash-efficiency">0.0</span><span class="hmi-unit">km/kWh</span></div>
+              <div class="soc-progress-track" style="margin-top:4px;">
+                <div class="soc-progress-fill" id="eff-bar-fill" style="width:0%;"></div>
               </div>
-              <div class="hmi-value"><span id="dash-current">40</span><span class="hmi-unit">A</span></div>
-            </div>
-
-            <div class="hmi-card">
-              <div class="hmi-card-header">
-                <span class="hmi-label">Est. Range</span>
-                <i data-lucide="map-pin" style="color:var(--success); width:20px; height:20px;"></i>
-              </div>
-              <div class="hmi-value"><span id="dash-range">100</span><span class="hmi-unit">km</span></div>
             </div>
           </div>
 
-          <!-- Center Automotive Speedometer Gauge -->
-          <div style="display:flex; flex-direction:column; justify-content:space-between; align-items:center;">
+          <!-- Center: Speed Gauge & Drive Status -->
+          <div class="dash-center">
             <div class="gauge-wrapper">
               <svg class="gauge-svg" viewBox="0 0 240 240">
                 <circle class="gauge-bg-arc" cx="120" cy="120" r="96"></circle>
@@ -259,48 +556,53 @@
                 <span class="hmi-label">Vehicle Speed</span>
                 <div style="font-family:var(--font-family-display); font-size:var(--font-hero); font-weight:900; color:#ffffff; font-variant-numeric:tabular-nums;" id="dash-speed">0</div>
                 <span class="hmi-unit">km/h</span>
+                <div style="font-size:15px; color:var(--text-secondary); font-weight:800; font-variant-numeric:tabular-nums; margin-top:2px;"><span id="dash-rpm">0</span> RPM</div>
               </div>
             </div>
 
-            <div style="display:flex; gap:var(--space-sm); align-items:center; margin-bottom: 4px;">
-              <div class="status-pill success"><i data-lucide="leaf" style="width:14px; height:14px;"></i> ECO MODE</div>
+            <div class="dash-pills">
+              <div class="status-pill success"><i data-lucide="leaf" style="width:14px; height:14px;"></i> ECO</div>
               <div class="status-pill accent">GEAR: F</div>
               <div class="status-pill success">PTO: ON</div>
             </div>
           </div>
 
-          <!-- Right Column -->
-          <div class="column-stack">
-            <div class="hmi-card">
-              <div class="hmi-card-header">
-                <span class="hmi-label">Motor RPM</span>
-                <i data-lucide="cpu" style="color:var(--accent-primary); width:20px; height:20px;"></i>
+          <!-- Right: Battery & Temperatures -->
+          <div class="dash-right">
+            <div class="dash-card">
+              <span class="hmi-label">Battery SOC</span>
+              <div class="dash-value dash-soc-num"><span id="dash-soc">100</span><span class="hmi-unit">%</span></div>
+              <div class="soc-progress-track">
+                <div class="soc-progress-fill" id="soc-bar-fill"></div>
               </div>
-              <div class="hmi-value"><span id="dash-rpm">0</span><span class="hmi-unit">RPM</span></div>
+              <div class="dash-batt-metrics">
+                <div class="dash-batt-metric">
+                  <span class="hmi-label">Voltage</span>
+                  <div style="font-family:var(--font-family-display); font-size:var(--font-body); font-weight:800; color:#ffffff; font-variant-numeric:tabular-nums;"><span id="dash-voltage">350</span> V</div>
+                </div>
+                <div class="dash-batt-metric">
+                  <span class="hmi-label">Current</span>
+                  <div style="font-family:var(--font-family-display); font-size:var(--font-body); font-weight:800; color:#ffffff; font-variant-numeric:tabular-nums;"><span id="dash-current">40</span> A</div>
+                </div>
+              </div>
             </div>
 
-            <div class="hmi-card">
-              <div class="hmi-card-header">
-                <span class="hmi-label">Motor Temp</span>
-                <i data-lucide="thermometer" style="color:var(--warning); width:20px; height:20px;"></i>
+            <div class="dash-card">
+              <span class="hmi-label">Temperatures</span>
+              <div class="dash-temps">
+                <div class="dash-temp-chip">
+                  <span class="temp-label">Motor</span>
+                  <span class="temp-value"><span id="dash-motor-temp">38</span>°C</span>
+                </div>
+                <div class="dash-temp-chip">
+                  <span class="temp-label">Controller</span>
+                  <span class="temp-value"><span id="dash-ctrl-temp">36</span>°C</span>
+                </div>
+                <div class="dash-temp-chip">
+                  <span class="temp-label">Battery</span>
+                  <span class="temp-value"><span id="dash-bat-temp">35</span>°C</span>
+                </div>
               </div>
-              <div class="hmi-value"><span id="dash-motor-temp">38</span><span class="hmi-unit">°C</span></div>
-            </div>
-
-            <div class="hmi-card">
-              <div class="hmi-card-header">
-                <span class="hmi-label">Controller Temp</span>
-                <i data-lucide="microchip" style="color:var(--accent-primary); width:20px; height:20px;"></i>
-              </div>
-              <div class="hmi-value"><span id="dash-ctrl-temp">36</span><span class="hmi-unit">°C</span></div>
-            </div>
-
-            <div class="hmi-card">
-              <div class="hmi-card-header">
-                <span class="hmi-label">Battery Temp</span>
-                <i data-lucide="thermometer-snowflake" style="color:var(--success); width:20px; height:20px;"></i>
-              </div>
-              <div class="hmi-value"><span id="dash-bat-temp">35</span><span class="hmi-unit">°C</span></div>
             </div>
           </div>
 
@@ -578,7 +880,45 @@
         <i data-lucide="info"></i>
         <span class="nav-tab-label">Info</span>
       </button>
+      <button class="nav-tab" onclick="window.location.href='navigation.html'">
+        <i data-lucide="navigation"></i>
+        <span class="nav-tab-label">Nav</span>
+      </button>
     </nav>
+
+    <!-- Hazard / Warning Screen (SBC linkable, high-visibility) -->
+    <div class="hazard-overlay" id="hazard-overlay">
+      <div class="hazard-topbar">
+        <div class="hazard-title">
+          <i data-lucide="shield-alert" style="color:var(--danger); width:24px; height:24px;"></i>
+          Hazard &amp; Warning Screen
+        </div>
+        <div class="hazard-alert"><i data-lucide="triangle-alert" style="width:14px; height:14px;"></i> Active Hazard</div>
+      </div>
+      <div class="hazard-list">
+        <div class="hazard-card">
+          <i data-lucide="triangle-alert" class="hazard-icon" style="color:var(--danger); width:34px; height:34px;"></i>
+          <div>
+            <div class="hazard-code">DTC-0842</div>
+            <div class="hazard-desc">Rear Left Tire Pressure Low — 1.8 Bar</div>
+          </div>
+          <span class="status-pill danger hazard-severity">CRITICAL</span>
+        </div>
+        <div class="hazard-card warning">
+          <i data-lucide="alert-triangle" class="hazard-icon" style="color:var(--warning); width:34px; height:34px;"></i>
+          <div>
+            <div class="hazard-code">DTC-1024</div>
+            <div class="hazard-desc warning">Battery Coolant Pressure Below Threshold</div>
+          </div>
+          <span class="status-pill warning hazard-severity">WARNING</span>
+        </div>
+      </div>
+      <div class="hazard-footer">
+        <button class="hmi-btn danger" onclick="toggleHazard(false)">
+          <i data-lucide="arrow-left" style="width:16px; height:16px;"></i> Return to Dashboard
+        </button>
+      </div>
+    </div>
 
   </div>
 
@@ -691,6 +1031,75 @@
       pointIndex = (pointIndex + 1) % speedPoints.length;
       updateSpeed(speedPoints[pointIndex], 600);
     }, 2200);
+
+    /* ================= WELCOME / SPLASH SCREEN ================= */
+    const splashEl = document.getElementById('hmi-splash');
+    const splashFill = document.getElementById('splash-progress');
+    const splashStatus = document.getElementById('splash-status');
+    const bootSteps = ['INITIALIZING SYSTEMS', 'CALIBRATING SENSORS', 'LINKING BMS & MCU', 'CHECKING SAFETY INTERLOCKS'];
+    let bootProgress = 0;
+    const bootTimer = setInterval(() => {
+      bootProgress += 6 + Math.random() * 9;
+      if (bootProgress >= 100) {
+        clearInterval(bootTimer);
+        splashFill.style.width = '100%';
+        splashStatus.textContent = 'SYSTEMS READY';
+        setTimeout(() => {
+          splashEl.classList.add('gone');
+          setTimeout(() => splashEl.remove(), 500);
+        }, 300);
+      } else {
+        splashFill.style.width = bootProgress + '%';
+        splashStatus.textContent = bootSteps[Math.min(bootSteps.length - 1, Math.floor(bootProgress / 25))];
+      }
+    }, 160);
+
+    /* ================= HAZARD / WARNING SCREEN ================= */
+    function toggleHazard(show) {
+      const overlay = document.getElementById('hazard-overlay');
+      const btn = document.getElementById('hazard-btn');
+      if (show) {
+        overlay.classList.add('active');
+        btn.classList.add('active');
+      } else {
+        overlay.classList.remove('active');
+        btn.classList.remove('active');
+      }
+    }
+    /* Demo: auto-open the hazard screen shortly after boot (wire to real DTC events) */
+    setTimeout(() => { if (document.getElementById('hazard-overlay')) toggleHazard(true); }, 9000);
+
+    /* ================= ODOMETER / TRIP / EFFICIENCY ================= */
+    let odometer = 4520.0;
+    let trip = 0.0;
+    let sessionDistance = 0.0;
+    let sessionEnergy = 0.0;
+    const odometerEl = document.getElementById('dash-odometer');
+    const tripEl = document.getElementById('dash-trip');
+    const effEl = document.getElementById('dash-efficiency');
+    const effBarEl = document.getElementById('eff-bar-fill');
+
+    function resetTrip() {
+      trip = 0.0;
+      sessionDistance = 0.0;
+      sessionEnergy = 0.0;
+      if (tripEl) tripEl.textContent = trip.toFixed(1);
+      if (effEl) effEl.textContent = '0.0';
+      if (effBarEl) effBarEl.style.width = '0%';
+    }
+
+    setInterval(() => {
+      const dist = currentSpeedVal / 3600; /* km per second at current speed */
+      odometer += dist;
+      trip += dist;
+      sessionDistance += dist;
+      sessionEnergy += 0.0025; /* simulated continuous draw */
+      if (odometerEl) odometerEl.textContent = odometer.toFixed(1);
+      if (tripEl) tripEl.textContent = trip.toFixed(1);
+      const eff = sessionEnergy > 0 ? sessionDistance / sessionEnergy : 0;
+      if (effEl) effEl.textContent = eff.toFixed(1);
+      if (effBarEl) effBarEl.style.width = Math.min(100, (eff / 12) * 100) + '%';
+    }, 1000);
   </script>
 </body>
 </html>

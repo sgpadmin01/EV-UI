@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1024, height=600, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SBC Navigation - SHIV KAUSHALYA EAV-700</title>
+  <link rel="stylesheet" href="../css/design-system.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .sbc-app {
+      width: 1024px;
+      height: 600px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: #070b10;
+    }
+
+    /* Top Bar */
+    .sbc-topbar {
+      height: 52px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-md);
+      background: var(--bg-header-grad);
+      border-bottom: 2px solid var(--border-color);
+      z-index: 5;
+    }
+    .sbc-brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .sbc-title {
+      font-family: var(--font-family-display);
+      font-size: var(--font-header);
+      font-weight: 800;
+      color: var(--accent-primary);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+    .sbc-title span {
+      color: var(--text-secondary);
+      font-size: var(--font-label);
+      letter-spacing: 0.5px;
+      font-family: var(--font-family-sans);
+      font-weight: 700;
+    }
+
+    /* Map Canvas */
+    .sbc-map {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      min-height: 0;
+    }
+    .map-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .map-road-major { stroke: #243045; stroke-width: 14; fill: none; stroke-linecap: round; }
+    .map-road-minor { stroke: #1a2434; stroke-width: 8; fill: none; stroke-linecap: round; }
+    .map-river { stroke: #0e2a38; stroke-width: 20; fill: none; stroke-linecap: round; }
+    .map-route { stroke: var(--accent-primary); stroke-width: 5; fill: none; stroke-dasharray: 14 10; stroke-linecap: round; opacity: 0.85; }
+
+    /* Markers (HTML overlay for crisp touch-friendly icons) */
+    .map-marker {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .veh-marker {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      border: 3px solid #ffffff;
+      box-shadow: 0 0 16px var(--accent-primary);
+    }
+    .veh-pulse {
+      position: absolute;
+      inset: -12px;
+      border-radius: 50%;
+      border: 2px solid var(--accent-primary);
+      animation: veh-pulse 1.8s ease-out infinite;
+    }
+    @keyframes veh-pulse {
+      0% { transform: scale(0.6); opacity: 1; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+    .dest-marker {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--danger);
+      border: 3px solid #ffffff;
+      box-shadow: 0 0 14px var(--danger);
+    }
+    .map-compass {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(10, 15, 22, 0.9);
+      border: 1.5px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-primary);
+    }
+    .map-scale {
+      position: absolute;
+      left: 14px;
+      bottom: 12px;
+      width: 110px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 2px;
+    }
+    .map-scale::after {
+      content: "500 m";
+      position: absolute;
+      top: 8px;
+      left: 0;
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-weight: 700;
+    }
+
+    /* Navigation Readout Card */
+    .nav-readout {
+      position: absolute;
+      left: 14px;
+      top: 12px;
+      width: 300px;
+      background: rgba(10, 15, 22, 0.92);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-card);
+      padding: 10px 14px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .nav-turn {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-family: var(--font-family-display);
+      font-size: var(--font-title);
+      font-weight: 800;
+      color: var(--accent-primary);
+      text-transform: uppercase;
+    }
+    .nav-turn-meta {
+      display: flex;
+      gap: var(--space-md);
+      font-size: var(--font-label);
+      color: var(--text-secondary);
+      font-weight: 700;
+    }
+    .nav-dest {
+      font-size: var(--font-body);
+      color: var(--text-primary);
+      font-weight: 700;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Mini Instrument Chips */
+    .nav-chips {
+      display: flex;
+      gap: var(--space-sm);
+    }
+    .nav-chip {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 6px 14px;
+    }
+    .nav-chip .chip-val {
+      font-family: var(--font-family-display);
+      font-size: var(--font-body);
+      font-weight: 800;
+      color: #ffffff;
+      font-variant-numeric: tabular-nums;
+    }
+    .nav-chip .chip-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Bottom Action Bar */
+    .sbc-bottombar {
+      height: 72px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: 0 var(--space-md);
+      background: var(--bg-nav-grad);
+      border-top: 2px solid var(--border-color);
+    }
+    .sbc-search {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      background: #10161f;
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-full);
+      padding: 0 16px;
+      height: 48px;
+      color: var(--text-secondary);
+      font-size: var(--font-body);
+      font-weight: 700;
+    }
+    .sbc-zoom {
+      display: flex;
+      gap: var(--space-xs);
+    }
+    .sbc-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(145deg, #222a36, #161c24);
+      border: 1.5px solid var(--border-color);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .sbc-btn:active { background: var(--accent-primary); color: #000000; }
+  </style>
+</head>
+<body>
+  <div class="sbc-app">
+
+    <!-- Top Bar -->
+    <div class="sbc-topbar">
+      <div class="sbc-brand">
+        <i data-lucide="map" style="color:var(--accent-primary); width:24px; height:24px;"></i>
+        <div>
+          <div class="sbc-title">SBC Navigation <span>— EAV-700</span></div>
+        </div>
+      </div>
+      <div class="hmi-header-right">
+        <span class="status-pill success"><i data-lucide="satellite" style="width:14px; height:14px;"></i> GPS LOCKED</span>
+        <div class="hmi-header-clock" id="nav-clock">14:30</div>
+        <button class="hmi-btn primary" onclick="window.location.href='index.html'">
+          <i data-lucide="layout-dashboard" style="width:16px; height:16px;"></i> HMI Dashboard
+        </button>
+      </div>
+    </div>
+
+    <!-- Map Canvas -->
+    <div class="sbc-map">
+      <svg class="map-svg" viewBox="0 0 1024 400" preserveAspectRatio="xMidYMid slice">
+        <rect width="1024" height="400" fill="#0a0f16"/>
+        <!-- Minor grid -->
+        <g stroke="#111826" stroke-width="1">
+          <line x1="128" y1="0" x2="128" y2="400"/><line x1="256" y1="0" x2="256" y2="400"/>
+          <line x1="384" y1="0" x2="384" y2="400"/><line x1="512" y1="0" x2="512" y2="400"/>
+          <line x1="640" y1="0" x2="640" y2="400"/><line x1="768" y1="0" x2="768" y2="400"/>
+          <line x1="896" y1="0" x2="896" y2="400"/>
+          <line x1="0" y1="64" x2="1024" y2="64"/><line x1="0" y1="128" x2="1024" y2="128"/>
+          <line x1="0" y1="192" x2="1024" y2="192"/><line x1="0" y1="256" x2="1024" y2="256"/>
+          <line x1="0" y1="320" x2="1024" y2="320"/>
+        </g>
+        <!-- River -->
+        <path class="map-river" d="M 0 250 C 200 230, 300 300, 460 260 S 760 210, 1024 240"/>
+        <!-- Major roads -->
+        <path class="map-road-major" d="M 0 120 H 1024"/>
+        <path class="map-road-major" d="M 0 320 H 1024"/>
+        <path class="map-road-major" d="M 220 0 V 400"/>
+        <path class="map-road-major" d="M 700 0 V 400"/>
+        <!-- Minor roads -->
+        <path class="map-road-minor" d="M 0 60 H 1024"/>
+        <path class="map-road-minor" d="M 0 200 H 1024"/>
+        <path class="map-road-minor" d="M 460 0 V 400"/>
+        <path class="map-road-minor" d="M 60 0 V 400"/>
+        <path class="map-road-minor" d="M 360 0 V 400"/>
+        <path class="map-road-minor" d="M 880 0 V 400"/>
+        <path class="map-road-minor" d="M 520 160 L 620 260 L 760 190"/>
+        <!-- Park blocks -->
+        <rect x="30" y="140" width="150" height="45" rx="8" fill="#0c1a12" stroke="#12291b" stroke-width="2"/>
+        <rect x="800" y="60" width="180" height="45" rx="8" fill="#0c1a12" stroke="#12291b" stroke-width="2"/>
+        <!-- Route to destination -->
+        <path class="map-route" d="M 360 280 L 470 240 L 520 160 L 620 260 L 830 210"/>
+      </svg>
+
+      <!-- Vehicle marker -->
+      <div class="map-marker" style="left:360px; top:280px;">
+        <span class="veh-pulse"></span>
+        <span class="veh-marker"></span>
+      </div>
+      <!-- Destination marker -->
+      <div class="map-marker" style="left:830px; top:210px;">
+        <span class="dest-marker"></span>
+      </div>
+
+      <!-- Compass -->
+      <div class="map-compass">
+        <i data-lucide="navigation-2" style="width:22px; height:22px;"></i>
+      </div>
+      <div class="map-scale"></div>
+
+      <!-- Navigation readout -->
+      <div class="nav-readout">
+        <div class="nav-turn">
+          <i data-lucide="corner-down-right" style="width:22px; height:22px;"></i>
+          Turn Right in 400 m
+        </div>
+        <div class="nav-dest">Destination: Main Research Farm Gate</div>
+        <div class="nav-turn-meta">
+          <span>ETA 12 min</span>
+          <span>• 3.8 km</span>
+          <span>• 15 km/h avg</span>
+        </div>
+        <div class="nav-chips">
+          <div class="nav-chip">
+            <span class="chip-val"><span id="nav-speed">0</span></span>
+            <span class="chip-label">km/h</span>
+          </div>
+          <div class="nav-chip">
+            <span class="chip-val">100%</span>
+            <span class="chip-label">SOC</span>
+          </div>
+          <div class="nav-chip">
+            <span class="chip-val">100 km</span>
+            <span class="chip-label">Range</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Action Bar -->
+    <div class="sbc-bottombar">
+      <div class="sbc-search">
+        <i data-lucide="search" style="width:20px; height:20px; color:var(--accent-primary);"></i>
+        Search destination, field, farm…
+      </div>
+      <div class="sbc-zoom">
+        <button class="sbc-btn" onclick="mapZoom(-1)"><i data-lucide="minus" style="width:20px; height:20px;"></i></button>
+        <button class="sbc-btn" onclick="mapZoom(1)"><i data-lucide="plus" style="width:20px; height:20px;"></i></button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('nav-clock').textContent = `${h}:${m}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    /* Demo zoom: scale the SVG layer (touch-friendly +/- buttons) */
+    const mapSvg = document.querySelector('.map-svg');
+    let zoom = 1;
+    function mapZoom(dir) {
+      zoom = Math.min(2.5, Math.max(1, zoom + dir * 0.25));
+      mapSvg.style.transform = `scale(${zoom})`;
+      mapSvg.style.transformOrigin = 'center';
+      mapSvg.style.transition = 'transform 0.2s ease';
+    }
+
+    /* Live speed demo on the nav readout */
+    const navSpeedEl = document.getElementById('nav-speed');
+    const speedPoints = [0, 12, 18, 22, 15, 24, 18, 0];
+    let idx = 0;
+    setInterval(() => {
+      idx = (idx + 1) % speedPoints.length;
+      navSpeedEl.textContent = speedPoints[idx];
+    }, 1500);
+  </script>
+</body>
+</html>

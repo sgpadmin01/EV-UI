@@ -20,7 +20,7 @@ app.use(cors());
 app.use(express.json());
 
 // Serve Static Client HMI Files
-app.use(express.static(path.join(__dirname, "../client/page")));
+app.use(express.static(path.join(__dirname, "../client/pages")));
 app.use("/css", express.static(path.join(__dirname, "../client/css")));
 
 // Routes

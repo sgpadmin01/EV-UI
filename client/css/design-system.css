@@ -530,7 +530,7 @@ html, body {
   background: var(--bg-nav-grad);
   border-top: 2px solid var(--border-color);
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   z-index: 10;
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.5);
 }
