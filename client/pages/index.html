@@ -963,11 +963,16 @@
     }
 
     // Real-Time Clock
+    let lastClockText = '';
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('hmi-clock').textContent = `${h}:${m}`;
+      const clockText = `${h}:${m}`;
+      if (clockText !== lastClockText) {
+        document.getElementById('hmi-clock').textContent = clockText;
+        lastClockText = clockText;
+      }
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -994,15 +999,44 @@
 
     function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
+    let lastAngle = null;
+    let lastOffset = null;
+    let lastRoundedSpeed = null;
+    let lastRpm = null;
+
     function renderGauge(speed) {
       const fraction = Math.max(0, Math.min(1, (speed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED)));
       const angle = MIN_ANGLE + fraction * (MAX_ANGLE - MIN_ANGLE);
-      if (gaugeNeedle) gaugeNeedle.style.transform = `rotate(${angle}deg)`;
+
+      if (gaugeNeedle) {
+        // Rounding to 2 decimal places to avoid micro-adjustments that are invisible to the eye
+        const roundedAngle = Math.round(angle * 100) / 100;
+        if (roundedAngle !== lastAngle) {
+          gaugeNeedle.style.transform = `rotate(${roundedAngle}deg)`;
+          lastAngle = roundedAngle;
+        }
+      }
+
       const offset = OFFSET_EMPTY - fraction * ARC_FILL_LENGTH;
-      if (gaugeArc) gaugeArc.style.strokeDashoffset = offset;
+      if (gaugeArc) {
+        const roundedOffset = Math.round(offset * 100) / 100;
+        if (roundedOffset !== lastOffset) {
+          gaugeArc.style.strokeDashoffset = roundedOffset;
+          lastOffset = roundedOffset;
+        }
+      }
+
       const roundedSpeed = Math.round(speed);
-      if (speedText) speedText.textContent = roundedSpeed;
-      if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      if (speedText && roundedSpeed !== lastRoundedSpeed) {
+        speedText.textContent = roundedSpeed;
+        lastRoundedSpeed = roundedSpeed;
+      }
+
+      const rpmVal = Math.round(roundedSpeed * 42);
+      if (rpmText && rpmVal !== lastRpm) {
+        rpmText.textContent = rpmVal;
+        lastRpm = rpmVal;
+      }
     }
 
     function updateSpeed(newSpeed, duration = 450) {
@@ -1042,19 +1076,26 @@
     const splashStatus = document.getElementById('splash-status');
     const bootSteps = ['INITIALIZING SYSTEMS', 'CALIBRATING SENSORS', 'LINKING BMS & MCU', 'CHECKING SAFETY INTERLOCKS'];
     let bootProgress = 0;
+    let lastSplashStatus = '';
     const bootTimer = setInterval(() => {
       bootProgress += 6 + Math.random() * 9;
       if (bootProgress >= 100) {
         clearInterval(bootTimer);
         splashFill.style.width = '100%';
-        splashStatus.textContent = 'SYSTEMS READY';
+        if (splashStatus && lastSplashStatus !== 'SYSTEMS READY') {
+          splashStatus.textContent = 'SYSTEMS READY';
+        }
         setTimeout(() => {
           splashEl.classList.add('gone');
           setTimeout(() => splashEl.remove(), 500);
         }, 300);
       } else {
         splashFill.style.width = bootProgress + '%';
-        splashStatus.textContent = bootSteps[Math.min(bootSteps.length - 1, Math.floor(bootProgress / 25))];
+        const currentStep = bootSteps[Math.min(bootSteps.length - 1, Math.floor(bootProgress / 25))];
+        if (splashStatus && currentStep !== lastSplashStatus) {
+          splashStatus.textContent = currentStep;
+          lastSplashStatus = currentStep;
+        }
       }
     }, 160);
 
@@ -1083,11 +1124,21 @@
     const effEl = document.getElementById('dash-efficiency');
     const effBarEl = document.getElementById('eff-bar-fill');
 
+    let lastOdometerText = '';
+    let lastTripText = '';
+    let lastEffText = '';
+    let lastEffBarWidth = '';
+
     function resetTrip() {
       trip = 0.0;
       sessionDistance = 0.0;
       sessionEnergy = 0.0;
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
+
+      lastTripText = '0.0';
+      lastEffText = '0.0';
+      lastEffBarWidth = '0%';
+
+      if (tripEl) tripEl.textContent = '0.0';
       if (effEl) effEl.textContent = '0.0';
       if (effBarEl) effBarEl.style.width = '0%';
     }
@@ -1098,11 +1149,39 @@
       trip += dist;
       sessionDistance += dist;
       sessionEnergy += 0.0025; /* simulated continuous draw */
-      if (odometerEl) odometerEl.textContent = odometer.toFixed(1);
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
+
+      if (odometerEl) {
+        const odoText = odometer.toFixed(1);
+        if (odoText !== lastOdometerText) {
+          odometerEl.textContent = odoText;
+          lastOdometerText = odoText;
+        }
+      }
+
+      if (tripEl) {
+        const tripText = trip.toFixed(1);
+        if (tripText !== lastTripText) {
+          tripEl.textContent = tripText;
+          lastTripText = tripText;
+        }
+      }
+
       const eff = sessionEnergy > 0 ? sessionDistance / sessionEnergy : 0;
-      if (effEl) effEl.textContent = eff.toFixed(1);
-      if (effBarEl) effBarEl.style.width = Math.min(100, (eff / 12) * 100) + '%';
+      if (effEl) {
+        const effText = eff.toFixed(1);
+        if (effText !== lastEffText) {
+          effEl.textContent = effText;
+          lastEffText = effText;
+        }
+      }
+
+      if (effBarEl) {
+        const effBarWidth = Math.min(100, (eff / 12) * 100) + '%';
+        if (effBarWidth !== lastEffBarWidth) {
+          effBarEl.style.width = effBarWidth;
+          lastEffBarWidth = effBarWidth;
+        }
+      }
     }, 1000);
   </script>
 </body>
