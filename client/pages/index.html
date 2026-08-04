@@ -4,9 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1024, height=600, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>SHIV KAUSHALYA 7.0" HMI Display - Capacitive Touch Scrolling</title>
+
+  <!-- Preconnect to external asset CDNs to parallelize DNS, TCP, and TLS handshakes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com">
+
+  <!-- Parallelize CSS and Font loading to prevent CSS @import render-blocking chain -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700;800&display=swap">
   <link rel="stylesheet" href="../css/design-system.css">
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Lucide Icons (Using pinned version to eliminate 302 redirect roundtrips & allow caching) -->
+  <script src="https://unpkg.com/lucide@1.28.0/dist/umd/lucide.min.js"></script>
   <style>
     /* Fixed 1024x600 Dashboard Grid Layout */
     .dashboard-grid {
@@ -991,6 +1000,7 @@
     const rpmText = document.getElementById('dash-rpm');
 
     let currentSpeedVal = 0; let targetSpeedVal = 0; let animationFrameId = null; let animStartTime = null; let animStartSpeed = 0;
+    let lastRoundedSpeed = null; // Guard to prevent redundant DOM text updates
 
     function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
@@ -1000,9 +1010,14 @@
       if (gaugeNeedle) gaugeNeedle.style.transform = `rotate(${angle}deg)`;
       const offset = OFFSET_EMPTY - fraction * ARC_FILL_LENGTH;
       if (gaugeArc) gaugeArc.style.strokeDashoffset = offset;
+
       const roundedSpeed = Math.round(speed);
-      if (speedText) speedText.textContent = roundedSpeed;
-      if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      // Performance optimization: Only update the text DOM nodes when the rounded integer speed value actually changes
+      if (roundedSpeed !== lastRoundedSpeed) {
+        lastRoundedSpeed = roundedSpeed;
+        if (speedText) speedText.textContent = roundedSpeed;
+        if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      }
     }
 
     function updateSpeed(newSpeed, duration = 450) {
