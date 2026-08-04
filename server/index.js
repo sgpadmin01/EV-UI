@@ -14,10 +14,22 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Disable X-Powered-By to prevent technology fingerprinting
+app.disable("x-powered-by");
+
 connectDB();
 
 app.use(cors());
 app.use(express.json());
+
+// Set critical security headers to prevent various web attacks (Clickjacking, MIME-sniffing, Referrer leaks, etc.)
+app.use((req, res, next) => {
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Referrer-Policy", "same-origin");
+  res.setHeader("Permissions-Policy", "geolocation=(), camera=(), microphone=()");
+  next();
+});
 
 // Serve Static Client HMI Files
 app.use(express.static(path.join(__dirname, "../client/pages")));
