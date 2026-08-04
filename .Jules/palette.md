@@ -1,0 +1,3 @@
+## 2026-03-31 - Tactile Feedback & Zoom ARIA Accessibility
+**Learning:** High-fidelity vehicular touchscreen dashboards benefit significantly from immediate on-screen micro-notifications (toasts) when toggling system variables like Screen Timeout or Creep Mode. Additionally, standard icon-only controls (such as navigation map zooms) lack immediate semantic labels, rendering them completely inaccessible to assistive screen-reader software without correct ARIA metadata.
+**Action:** Always wrap state changes in immediate visual/text feedback (such as toasts) and ensure all standalone icon-only touch nodes carry explicit `aria-label` properties.
