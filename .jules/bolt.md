@@ -1,0 +1,3 @@
+## 2026-03-01 - DOM Updates and Layout Thrashing in Embedded HMI
+**Learning:** In resource-constrained, framework-less capacitive touch embedded environments (like DWIN or SBC screens), high-frequency or periodic interval updates (such as `requestAnimationFrame` speedometers or 1-second clock tickers) that perform redundant DOM writes lead to massive layout/reflow overhead. Even if a string or number hasn't changed, overwriting `Element.textContent` or style variables forces the browser engine to perform unnecessary styling and layout recalculations.
+**Action:** Always implement a lightweight dirty-checking/write-caching layer in raw JavaScript to compare new values against cached states, ensuring DOM access is performed only on actual state transitions.
