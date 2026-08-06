@@ -8,6 +8,16 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
+    /* Box-sizing reset: guarantees padding/border are counted INSIDE each
+       element's declared width instead of adding to it. Without this,
+       fixed-width columns (e.g. the 220px/230px dashboard rails) and
+       padded cards/table cells can overflow their tracks even though the
+       CSS "looks" correct. Safe to keep even if design-system.css already
+       sets this, since duplicate box-sizing rules simply no-op. */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
     /* Fixed 1024x600 Dashboard Grid Layout */
     .dashboard-grid {
       display: grid;
@@ -21,12 +31,14 @@
       display: flex;
       flex-direction: column;
       gap: var(--space-xs);
+      min-width: 0;
     }
 
     /* Automotive Speedometer Gauge Visual Polish */
     .gauge-wrapper {
       width: 340px;
       height: 340px;
+      max-width: 100%;
       position: relative;
       display: flex;
       align-items: center;
@@ -150,6 +162,13 @@
       font-size: var(--font-body);
     }
 
+    /* Severity & Status hold short badges, not prose — centering them
+       under their header reads as aligned instead of stranded on the left */
+    .fault-table th:nth-child(4), .fault-table td:nth-child(4),
+    .fault-table th:nth-child(5), .fault-table td:nth-child(5) {
+      text-align: center;
+    }
+
     .fault-table th {
       color: var(--text-secondary);
       font-size: var(--font-label);
@@ -269,6 +288,7 @@
       flex-direction: column;
       gap: var(--space-sm);
       justify-content: space-between;
+      min-width: 0;
     }
     .dash-center {
       display: flex;
@@ -355,22 +375,24 @@
       padding-top: 8px;
       border-top: 1px solid var(--border-color);
     }
-    .dash-batt-metric { flex: 1; }
+    .dash-batt-metric { flex: 1; min-width: 0; }
     .dash-temps {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 1fr;
       gap: var(--space-xs);
       margin-top: 8px;
     }
     .dash-temp-chip {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       align-items: center;
-      gap: 2px;
+      justify-content: space-between;
+      gap: 8px;
+      min-width: 0;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-sm);
-      padding: 8px 4px;
+      padding: 8px 12px;
       transition: border-color 0.15s ease-out, background 0.15s ease-out;
     }
     .dash-temp-chip:active {
@@ -498,6 +520,10 @@
       box-shadow: 0 0 18px var(--warning-glow);
     }
     .hazard-icon { flex-shrink: 0; }
+    .hazard-card > div {
+      flex: 1;
+      min-width: 0;
+    }
     .hazard-code {
       font-family: var(--font-family-display);
       font-size: var(--font-title);
@@ -1041,7 +1067,14 @@
 
     /* AUTOMOTIVE SPEEDOMETER ANIMATION ENGINE */
     const MIN_SPEED = 0; const MAX_SPEED = 50; const MIN_ANGLE = -70; const MAX_ANGLE = 110;
-    const CIRCUMFERENCE = 603.185; const ARC_FILL_LENGTH = 402.12; const OFFSET_EMPTY = CIRCUMFERENCE;
+    const CIRCUMFERENCE = 603.185;
+    /* Arc fill length is derived from the SAME angle range as the needle
+       (MIN_ANGLE to MAX_ANGLE), not a separate hardcoded number. Previously
+       this was 402.12, which corresponds to a 240° sweep while the needle
+       only rotates 180° — so the colored arc's tip drifted ahead of the
+       needle's tip at every speed. Deriving it here keeps them locked. */
+    const ARC_FILL_LENGTH = CIRCUMFERENCE * (MAX_ANGLE - MIN_ANGLE) / 360;
+    const OFFSET_EMPTY = CIRCUMFERENCE;
 
     const gaugeArc = document.getElementById('gauge-arc');
     const gaugeNeedle = document.getElementById('speed-needle');
