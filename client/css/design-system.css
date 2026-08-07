@@ -572,3 +572,21 @@ html, body {
 .nav-tab.active {
   border-top: 3px solid var(--accent-primary);
 }
+
+/* Accessibility focus styles for keyboard navigation */
+:focus-visible {
+  outline: 3px solid var(--accent-primary);
+  outline-offset: 3px;
+}
+
+/* Checkbox toggle keyboard focus state */
+.hmi-toggle input:focus-visible + .hmi-toggle-slider {
+  outline: 3px solid var(--accent-primary);
+  outline-offset: 3px;
+}
+
+/* Range slider keyboard focus state */
+.hmi-slider:focus-visible {
+  outline: 3px solid var(--accent-primary);
+  outline-offset: 4px;
+}
