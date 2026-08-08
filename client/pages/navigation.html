@@ -369,11 +369,18 @@
   <script>
     lucide.createIcons();
 
+    // Real-Time Clock with Cache Guard (Avoid redundant DOM re-writes)
+    let lastClockStr = '';
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('nav-clock').textContent = `${h}:${m}`;
+      const clockStr = `${h}:${m}`;
+      if (clockStr !== lastClockStr) {
+        const clockEl = document.getElementById('nav-clock');
+        if (clockEl) clockEl.textContent = clockStr;
+        lastClockStr = clockStr;
+      }
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -388,13 +395,18 @@
       mapSvg.style.transition = 'transform 0.2s ease';
     }
 
-    /* Live speed demo on the nav readout */
+    /* Live speed demo on the nav readout with Cache Guard */
     const navSpeedEl = document.getElementById('nav-speed');
     const speedPoints = [0, 12, 18, 22, 15, 24, 18, 0];
     let idx = 0;
+    let lastSpeedVal = null;
     setInterval(() => {
       idx = (idx + 1) % speedPoints.length;
-      navSpeedEl.textContent = speedPoints[idx];
+      const speedVal = speedPoints[idx];
+      if (navSpeedEl && speedVal !== lastSpeedVal) {
+        navSpeedEl.textContent = speedVal;
+        lastSpeedVal = speedVal;
+      }
     }, 1500);
   </script>
 </body>
