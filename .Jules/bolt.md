@@ -1,0 +1,3 @@
+## 2026-08-08 - Cache Guards on High-Frequency DOM Operations
+**Learning:** For a framework-less HMI rendering telemetry data (such as simulated speed, RPM, odometer, trip meter, and clock) on low-power touch display units, redundant and high-frequency DOM manipulation calls (like updating `textContent`, `style.transform`, and `style.strokeDashoffset` on every iteration) cause massive main thread blockage, layout reflow, and paint overhead. Dirty-checking / cache guards can prevent these writes unless the underlying value has actually changed.
+**Action:** Always apply dirty-checking / cache guards to filter out redundant DOM writes inside animation loops, requestAnimationFrame frames, and intervals targeting the DOM to ensure smooth touch responsiveness.
