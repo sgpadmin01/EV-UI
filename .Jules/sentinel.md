@@ -1,0 +1,4 @@
+## 2026-08-07 - Implement Custom Express Security Middleware
+**Vulnerability:** Information leakage via the 'X-Powered-By' header, vulnerability to Clickjacking (lack of 'X-Frame-Options'), MIME-sniffing vulnerability ('X-Content-Type-Options'), and lack of standard Content Security Policy (CSP) leaving the application vulnerable to Cross-Site Scripting (XSS).
+**Learning:** These standard security headers were not configured because the Express server was implemented in a lightweight fashion without third-party security middleware (such as Helmet), which left standard software version headers exposed and omitted crucial web platform defenses.
+**Prevention:** Hand-craft standard security middleware headers natively in Express when lightweight setups are preferred or when extra NPM dependencies are restricted, ensuring that secure headers (CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, and X-XSS-Protection) are consistently applied.
