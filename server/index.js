@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import connectDB from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
+import securityMiddleware from "./middleware/securityMiddleware.js";
 
 dotenv.config();
 
@@ -14,8 +15,13 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Disable X-Powered-By at Express level for defense-in-depth
+app.disable("x-powered-by");
+
 connectDB();
 
+// Apply security middleware early in the lifecycle
+app.use(securityMiddleware);
 app.use(cors());
 app.use(express.json());
 
