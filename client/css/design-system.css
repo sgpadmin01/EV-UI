@@ -527,6 +527,14 @@ html, body {
   box-shadow: 0 0 10px var(--accent-primary);
 }
 
+/* High-contrast focus indicator styles for keyboard navigability */
+button:focus-visible,
+input:focus-visible,
+label.hmi-toggle:focus-within {
+  outline: 3px solid var(--accent-primary) !important;
+  outline-offset: 3px !important;
+}
+
 /* Bottom HMI Navigation Bar (Fixed 64px Height) */
 .hmi-navbar {
   height: 64px;
