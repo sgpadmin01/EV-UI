@@ -1,0 +1,4 @@
+## 2026-08-10 - HMI Web Server Information Disclosure and Clickjacking Risks
+**Vulnerability:** The Express backend lacked crucial security headers, exposing the touchscreen HMI to Clickjacking (`X-Frame-Options`), MIME-type sniffing (`X-Content-Type-Options`), and Information Disclosure via the default `X-Powered-By: Express` header.
+**Learning:** Single-purpose touchscreens and kiosk-style HMI apps are vulnerable to Clickjacking and overlay hijack attacks if they can be embedded in nested frames. Moreover, lack of strict MIME-type checking could lead to cross-site scripting (XSS) via content spoofing.
+**Prevention:** Disable `x-powered-by` via Express application settings and implement a centralized, dependency-free middleware that injects security headers (`X-Frame-Options`, `X-Content-Type-Options`, `X-XSS-Protection`, `Referrer-Policy`, and a custom `Content-Security-Policy` aligned with static CDNs).
