@@ -572,3 +572,19 @@ html, body {
 .nav-tab.active {
   border-top: 3px solid var(--accent-primary);
 }
+
+/* High-Contrast Touch & Keyboard Focus Accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--accent-primary);
+  outline-offset: 3px;
+  box-shadow: 0 0 12px var(--accent-primary);
+}
+
+/* Custom mapping for hidden checkbox inputs on focus-visible */
+.hmi-toggle input:focus-visible + .hmi-toggle-slider {
+  outline: 3px solid var(--accent-primary);
+  outline-offset: 3px;
+  box-shadow: 0 0 12px var(--accent-primary);
+}
