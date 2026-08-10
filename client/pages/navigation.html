@@ -369,11 +369,17 @@
   <script>
     lucide.createIcons();
 
+    // Real-Time Clock with Cache Guard (only updates DOM when HH:MM changes)
+    let lastClockTime = "";
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('nav-clock').textContent = `${h}:${m}`;
+      const timeStr = `${h}:${m}`;
+      if (lastClockTime !== timeStr) {
+        document.getElementById('nav-clock').textContent = timeStr;
+        lastClockTime = timeStr;
+      }
     }
     setInterval(updateClock, 1000);
     updateClock();
