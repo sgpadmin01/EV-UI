@@ -1,0 +1,3 @@
+## 2025-02-12 - Framework-less DOM Performance & Layout Thrashing
+**Learning:** In highly high-frequency execution contexts (like `requestAnimationFrame` render loops or 1-second interval timers) in vanilla framework-less applications, direct DOM modifications (e.g., updating `.textContent`, `.style.width`, `.style.transform`) on every tick can cause heavy layout thrashing, layout invalidation, and expensive reflows/paints even when the actual underlying state or displayed value hasn't changed.
+**Action:** Always implement cached-state comparisons/guards (dirty-checking) before performing any DOM write or layout-changing operation. This ensures that the browser only repaints and reflows elements when their visible state has genuinely changed.
