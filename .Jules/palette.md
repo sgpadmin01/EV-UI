@@ -1,0 +1,3 @@
+## 2026-03-01 - Embedded Touchscreen HMI Input Focus and Tab Layout
+**Learning:** For framework-less single-page touchscreen applications on embedded displays, standard spatial navigation and semantic WAI-ARIA layout structure are critical to support non-touch accessibility and keyboard layout interaction. Interactive inputs styled via custom controls (such as toggles and sliders) should leverage `:focus-visible` to render high-contrast visual indicators around their visible selector container rather than their hidden interactive elements.
+**Action:** Establish clear `:focus-visible` focus outlines mapped to visible custom wrapper classes, ensure all tab lists leverage role="tablist", role="tab", aria-controls, and dynamic aria-selected state switching.
