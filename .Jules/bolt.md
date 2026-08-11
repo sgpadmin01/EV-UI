@@ -1,0 +1,3 @@
+## 2025-08-11 - Cache Guards for High-Frequency DOM Operations
+**Learning:** In framework-less HMI environments, direct DOM modifications (e.g., `textContent` or inline `style` changes) inside high-frequency execution flows (such as `requestAnimationFrame` loops or `setInterval` timers) trigger frequent rendering/style recalculations and layout reflows even when the underlying data is identical. Implementing caching/dirty-checking guards to only apply updates when values have strictly changed significantly reduces unnecessary layout rendering workloads.
+**Action:** Always check and compare current values with cached states before performing high-frequency DOM manipulation/style updates.
