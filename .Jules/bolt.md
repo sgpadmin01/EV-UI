@@ -1,0 +1,3 @@
+## 2025-08-13 - State-caching and Dirty-checking in Framework-less HMI Client
+**Learning:** In a framework-less HMI client application with fast animation loops (like requestAnimationFrame and short setInterval intervals), continuously writing the same telemetry values (speedometer needle transforms, clock texts, SVG stroke-dashoffset) directly to DOM elements causes the browser to repeatedly execute expensive layout, style recalculations, and repaint cycles.
+**Action:** Always implement local state/cache variables to perform dirty-checking before writing to the DOM. Only update properties if their string or numeric representation has actually changed.
