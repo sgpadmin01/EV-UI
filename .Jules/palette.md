@@ -1,0 +1,3 @@
+## 2026-03-30 - Keyboard Focus Visible Indicators & ARIA Accessibility for Custom HMI Controls
+**Learning:** Programmatic `.focus()` in automated Playwright tests does not trigger CSS `:focus-visible` states; native keyboard events (such as pressing 'Tab') are required. Furthermore, custom HTML toggle switches wrapping `<input type="checkbox">` elements require explicit focus delegation rules (e.g. `.hmi-toggle input:focus-visible + .hmi-toggle-slider`) so that keyboard focus outlines are visible on the custom slider track instead of being clipped by the hidden input element.
+**Action:** Always map focus styles on custom switch components to their visible adjacent element using `:focus-visible + .visible-slider` and verify with keyboard Tab press events in Playwright.
