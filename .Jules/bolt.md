@@ -1,0 +1,3 @@
+## 2026-08-14 - DOM Dirty-Checking Guards for HMI Animation Loops
+**Learning:** In framework-less vanilla JavaScript HMI client applications running high-frequency animation loops (`requestAnimationFrame` or short `setInterval` callbacks), repeatedly setting DOM properties like `textContent`, `style.transform`, or `style.strokeDashoffset` on every frame triggers layout/style calculations and reflows even when the underlying value has not changed.
+**Action:** Always maintain module or function closure cache variables (e.g., `lastValue`) and perform dirty-checking (`if (newValue !== lastValue)`) before mutating DOM node properties in high-frequency update loops.
