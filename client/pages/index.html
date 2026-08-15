@@ -1047,11 +1047,18 @@
     }
 
     // Real-Time Clock
+    let cachedClockTime = null;
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('hmi-clock').textContent = `${h}:${m}`;
+      const timeStr = `${h}:${m}`;
+      // Performance optimization: dirty check to avoid redundant DOM mutations every second
+      if (timeStr !== cachedClockTime) {
+        cachedClockTime = timeStr;
+        const clockEl = document.getElementById('hmi-clock');
+        if (clockEl) clockEl.textContent = timeStr;
+      }
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -1082,6 +1089,7 @@
     const rpmText = document.getElementById('dash-rpm');
 
     let currentSpeedVal = 0; let targetSpeedVal = 0; let animationFrameId = null; let animStartTime = null; let animStartSpeed = 0;
+    let cachedSpeedVal = null;
 
     function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
@@ -1092,8 +1100,12 @@
       const offset = OFFSET_EMPTY - fraction * ARC_FILL_LENGTH;
       if (gaugeArc) gaugeArc.style.strokeDashoffset = offset;
       const roundedSpeed = Math.round(speed);
-      if (speedText) speedText.textContent = roundedSpeed;
-      if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      // Performance optimization: cache check to avoid text node DOM mutations on 60fps animation frames when integer speed is unchanged
+      if (roundedSpeed !== cachedSpeedVal) {
+        cachedSpeedVal = roundedSpeed;
+        if (speedText) speedText.textContent = roundedSpeed;
+        if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      }
     }
 
     function updateSpeed(newSpeed, duration = 450) {
@@ -1169,6 +1181,10 @@
     let trip = 0.0;
     let sessionDistance = 0.0;
     let sessionEnergy = 0.0;
+    let cachedOdoStr = null;
+    let cachedTripStr = null;
+    let cachedEffStr = null;
+    let cachedEffWidthStr = null;
     const odometerEl = document.getElementById('dash-odometer');
     const tripEl = document.getElementById('dash-trip');
     const effEl = document.getElementById('dash-efficiency');
@@ -1178,7 +1194,10 @@
       trip = 0.0;
       sessionDistance = 0.0;
       sessionEnergy = 0.0;
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
+      cachedTripStr = '0.0';
+      cachedEffStr = '0.0';
+      cachedEffWidthStr = '0%';
+      if (tripEl) tripEl.textContent = '0.0';
       if (effEl) effEl.textContent = '0.0';
       if (effBarEl) effBarEl.style.width = '0%';
     }
@@ -1189,11 +1208,32 @@
       trip += dist;
       sessionDistance += dist;
       sessionEnergy += 0.0025; /* simulated continuous draw */
-      if (odometerEl) odometerEl.textContent = odometer.toFixed(1);
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
+
+      // Performance optimization: dirty-check text/style values before mutating DOM
+      const odoStr = odometer.toFixed(1);
+      if (odoStr !== cachedOdoStr) {
+        cachedOdoStr = odoStr;
+        if (odometerEl) odometerEl.textContent = odoStr;
+      }
+
+      const tripStr = trip.toFixed(1);
+      if (tripStr !== cachedTripStr) {
+        cachedTripStr = tripStr;
+        if (tripEl) tripEl.textContent = tripStr;
+      }
+
       const eff = sessionEnergy > 0 ? sessionDistance / sessionEnergy : 0;
-      if (effEl) effEl.textContent = eff.toFixed(1);
-      if (effBarEl) effBarEl.style.width = Math.min(100, (eff / 12) * 100) + '%';
+      const effStr = eff.toFixed(1);
+      if (effStr !== cachedEffStr) {
+        cachedEffStr = effStr;
+        if (effEl) effEl.textContent = effStr;
+      }
+
+      const effWidthStr = Math.min(100, (eff / 12) * 100) + '%';
+      if (effWidthStr !== cachedEffWidthStr) {
+        cachedEffWidthStr = effWidthStr;
+        if (effBarEl) effBarEl.style.width = effWidthStr;
+      }
     }, 1000);
   </script>
 </body>
