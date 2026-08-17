@@ -1,0 +1,3 @@
+## 2026-08-17 - High-Frequency Animation and Interval Dirty-Checking
+**Learning:** In a vanilla HTML/JS single-page HMI application running 60fps requestAnimationFrame animations and 1s telemetry intervals, repeatedly querying DOM elements (`document.getElementById`) and setting `textContent` / `style.width` without dirty checking triggers unnecessary DOM mutations, node dirtying, and potential layout recalculations even when values remain identical.
+**Action:** Always cache DOM element references outside loop functions and apply simple equality dirty checking (`val !== lastVal`) before writing to the DOM in animation loops or high-frequency intervals.
