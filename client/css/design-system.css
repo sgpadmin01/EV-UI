@@ -572,3 +572,34 @@ html, body {
 .nav-tab.active {
   border-top: 3px solid var(--accent-primary);
 }
+
+/* Accessibility & Keyboard Focus Styles */
+:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+.hmi-btn:focus-visible,
+.sbc-btn:focus-visible,
+.hmi-hazard-btn:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.nav-tab:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: -2px;
+  background: rgba(0, 229, 255, 0.12);
+}
+
+.hmi-slider:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 4px;
+}
+
+.hmi-toggle input:focus-visible + .hmi-toggle-slider {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 3px;
+  box-shadow: 0 0 10px var(--accent-glow);
+}
