@@ -1,0 +1,3 @@
+## 2026-03-30 - Focus Indicators on Custom Hidden Inputs
+**Learning:** In custom UI components where the native `<input type="checkbox">` or `<input type="radio">` is hidden (e.g. `opacity: 0; width: 0; height: 0;`), standard focus outlines on the input element are invisible. Using `.hmi-toggle input:focus-visible + .hmi-toggle-slider` targets the visible slider element when the hidden native input receives keyboard focus.
+**Action:** Always map `:focus-visible` styles on custom toggle/checkbox/radio components to their visible sibling elements so keyboard navigation remains visual and accessible.
