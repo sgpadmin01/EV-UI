@@ -1082,6 +1082,7 @@
     const rpmText = document.getElementById('dash-rpm');
 
     let currentSpeedVal = 0; let targetSpeedVal = 0; let animationFrameId = null; let animStartTime = null; let animStartSpeed = 0;
+    let lastRoundedSpeed = null;
 
     function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
@@ -1091,9 +1092,16 @@
       if (gaugeNeedle) gaugeNeedle.style.transform = `rotate(${angle}deg)`;
       const offset = OFFSET_EMPTY - fraction * ARC_FILL_LENGTH;
       if (gaugeArc) gaugeArc.style.strokeDashoffset = offset;
+
+      // Bolt performance optimization: Cache guard on high-frequency DOM text updates.
+      // Math.round(speed) changes far less frequently than floating point animation frames (60 FPS),
+      // preventing redundant DOM layout reflows and text node mutations.
       const roundedSpeed = Math.round(speed);
-      if (speedText) speedText.textContent = roundedSpeed;
-      if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      if (roundedSpeed !== lastRoundedSpeed) {
+        lastRoundedSpeed = roundedSpeed;
+        if (speedText) speedText.textContent = roundedSpeed;
+        if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      }
     }
 
     function updateSpeed(newSpeed, duration = 450) {
