@@ -1,0 +1,3 @@
+## 2026-03-30 - DOM Dirty-Checking for High-Frequency HMI Render Loops
+**Learning:** High-frequency rendering loops (such as requestAnimationFrame speed gauge animations or 1s telemetry update intervals) in framework-less JS apps frequently mutate textContent on every frame/tick even when the rounded numeric values remain identical, triggering unnecessary DOM text node mutations and style/layout recalculations.
+**Action:** Always maintain primitive cache guard variables (`lastValue`) for DOM element text nodes in animation loops and periodic intervals, checking `if (val !== lastVal)` before writing to `textContent`.
