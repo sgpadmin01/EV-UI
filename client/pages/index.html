@@ -859,13 +859,13 @@
               </div>
               <div class="hmi-slider-container" style="margin-top:14px;">
                 <i data-lucide="sun" style="width:22px; height:22px; color:var(--text-secondary);"></i>
-                <input type="range" class="hmi-slider" min="10" max="100" value="80" id="brightness-slider">
+                <input type="range" class="hmi-slider" min="10" max="100" value="80" id="brightness-slider" aria-label="Display Brightness">
               </div>
 
               <div class="hmi-toggle-wrapper" style="margin-top:14px;">
                 <span class="hmi-label">Auto Screen Timeout</span>
                 <label class="hmi-toggle">
-                  <input type="checkbox" checked>
+                  <input type="checkbox" checked aria-label="Auto Screen Timeout">
                   <span class="hmi-toggle-slider"></span>
                 </label>
               </div>
@@ -873,7 +873,7 @@
               <div class="hmi-toggle-wrapper">
                 <span class="hmi-label">Touch Beep Feedback</span>
                 <label class="hmi-toggle">
-                  <input type="checkbox" checked>
+                  <input type="checkbox" checked aria-label="Touch Beep Feedback">
                   <span class="hmi-toggle-slider"></span>
                 </label>
               </div>
@@ -883,17 +883,17 @@
               <div class="hmi-card-header">
                 <span class="hmi-label">Regenerative Braking Level</span>
               </div>
-              <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:var(--space-xs); margin-top:14px;">
-                <button class="hmi-btn" style="min-width:auto;">OFF</button>
-                <button class="hmi-btn" style="min-width:auto;">LVL 1</button>
-                <button class="hmi-btn primary" style="min-width:auto;">LVL 2</button>
-                <button class="hmi-btn" style="min-width:auto;">LVL 3</button>
+              <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:var(--space-xs); margin-top:14px;" role="group" aria-label="Regenerative Braking Level">
+                <button class="hmi-btn regen-btn" onclick="setRegenLevel(this)" aria-pressed="false" style="min-width:auto;">OFF</button>
+                <button class="hmi-btn regen-btn" onclick="setRegenLevel(this)" aria-pressed="false" style="min-width:auto;">LVL 1</button>
+                <button class="hmi-btn regen-btn primary" onclick="setRegenLevel(this)" aria-pressed="true" style="min-width:auto;">LVL 2</button>
+                <button class="hmi-btn regen-btn" onclick="setRegenLevel(this)" aria-pressed="false" style="min-width:auto;">LVL 3</button>
               </div>
 
               <div class="hmi-toggle-wrapper" style="margin-top:14px;">
                 <span class="hmi-label">Max Speed Limiter (40 km/h)</span>
                 <label class="hmi-toggle">
-                  <input type="checkbox">
+                  <input type="checkbox" aria-label="Max Speed Limiter (40 km/h)">
                   <span class="hmi-toggle-slider"></span>
                 </label>
               </div>
@@ -901,7 +901,7 @@
               <div class="hmi-toggle-wrapper">
                 <span class="hmi-label">Creep Drive Mode</span>
                 <label class="hmi-toggle">
-                  <input type="checkbox" checked>
+                  <input type="checkbox" checked aria-label="Creep Drive Mode">
                   <span class="hmi-toggle-slider"></span>
                 </label>
               </div>
@@ -947,28 +947,28 @@
     </main>
 
     <!-- Bottom Navigation Bar -->
-    <nav class="hmi-navbar">
-      <button class="nav-tab active" onclick="switchTab('dashboard')">
+    <nav class="hmi-navbar" role="tablist" aria-label="Primary Navigation">
+      <button class="nav-tab active" role="tab" aria-selected="true" onclick="switchTab('dashboard')">
         <i data-lucide="layout-dashboard"></i>
         <span class="nav-tab-label">Dashboard</span>
       </button>
-      <button class="nav-tab" onclick="switchTab('charging')">
+      <button class="nav-tab" role="tab" aria-selected="false" onclick="switchTab('charging')">
         <i data-lucide="battery-charging"></i>
         <span class="nav-tab-label">Charging</span>
       </button>
-      <button class="nav-tab" onclick="switchTab('faults')">
+      <button class="nav-tab" role="tab" aria-selected="false" onclick="switchTab('faults')">
         <i data-lucide="shield-alert"></i>
         <span class="nav-tab-label">Faults</span>
       </button>
-      <button class="nav-tab" onclick="switchTab('settings')">
+      <button class="nav-tab" role="tab" aria-selected="false" onclick="switchTab('settings')">
         <i data-lucide="sliders"></i>
         <span class="nav-tab-label">Settings</span>
       </button>
-      <button class="nav-tab" onclick="switchTab('info')">
+      <button class="nav-tab" role="tab" aria-selected="false" onclick="switchTab('info')">
         <i data-lucide="info"></i>
         <span class="nav-tab-label">Info</span>
       </button>
-      <button class="nav-tab" onclick="window.location.href='navigation.html'">
+      <button class="nav-tab" role="tab" aria-selected="false" onclick="window.location.href='navigation.html'">
         <i data-lucide="navigation"></i>
         <span class="nav-tab-label">Nav</span>
       </button>
@@ -1020,7 +1020,10 @@
 
       if (activePanel === targetPanel) return;
 
-      document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('active');
+        tab.setAttribute('aria-selected', 'false');
+      });
 
       if (activePanel) {
         activePanel.style.opacity = '0';
@@ -1043,7 +1046,20 @@
       const activeBtn = Array.from(document.querySelectorAll('.nav-tab')).find(btn => 
         btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tabId)
       );
-      if (activeBtn) activeBtn.classList.add('active');
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+        activeBtn.setAttribute('aria-selected', 'true');
+      }
+    }
+
+    // Regenerative Braking Selector
+    function setRegenLevel(btn) {
+      document.querySelectorAll('.regen-btn').forEach(b => {
+        b.classList.remove('primary');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      btn.classList.add('primary');
+      btn.setAttribute('aria-pressed', 'true');
     }
 
     // Real-Time Clock
