@@ -1085,15 +1085,34 @@
 
     function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
+    // Bolt Performance Optimization: dirty-checking cache to avoid redundant DOM mutations on high-frequency renders
+    let lastAngle = null;
+    let lastOffset = null;
+    let lastSpeedText = null;
+    let lastRpmText = null;
+
     function renderGauge(speed) {
       const fraction = Math.max(0, Math.min(1, (speed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED)));
       const angle = MIN_ANGLE + fraction * (MAX_ANGLE - MIN_ANGLE);
-      if (gaugeNeedle) gaugeNeedle.style.transform = `rotate(${angle}deg)`;
+      if (gaugeNeedle && angle !== lastAngle) {
+        gaugeNeedle.style.transform = `rotate(${angle}deg)`;
+        lastAngle = angle;
+      }
       const offset = OFFSET_EMPTY - fraction * ARC_FILL_LENGTH;
-      if (gaugeArc) gaugeArc.style.strokeDashoffset = offset;
+      if (gaugeArc && offset !== lastOffset) {
+        gaugeArc.style.strokeDashoffset = offset;
+        lastOffset = offset;
+      }
       const roundedSpeed = Math.round(speed);
-      if (speedText) speedText.textContent = roundedSpeed;
-      if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      if (speedText && roundedSpeed !== lastSpeedText) {
+        speedText.textContent = roundedSpeed;
+        lastSpeedText = roundedSpeed;
+      }
+      const roundedRpm = Math.round(roundedSpeed * 42);
+      if (rpmText && roundedRpm !== lastRpmText) {
+        rpmText.textContent = roundedRpm;
+        lastRpmText = roundedRpm;
+      }
     }
 
     function updateSpeed(newSpeed, duration = 450) {
@@ -1174,13 +1193,22 @@
     const effEl = document.getElementById('dash-efficiency');
     const effBarEl = document.getElementById('eff-bar-fill');
 
+    // Bolt Performance Optimization: dirty-checking cache for telemetry timer DOM updates
+    let lastOdoText = null;
+    let lastTripText = null;
+    let lastEffText = null;
+    let lastEffWidth = null;
+
     function resetTrip() {
       trip = 0.0;
       sessionDistance = 0.0;
       sessionEnergy = 0.0;
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
-      if (effEl) effEl.textContent = '0.0';
-      if (effBarEl) effBarEl.style.width = '0%';
+      lastTripText = trip.toFixed(1);
+      lastEffText = '0.0';
+      lastEffWidth = '0%';
+      if (tripEl) tripEl.textContent = lastTripText;
+      if (effEl) effEl.textContent = lastEffText;
+      if (effBarEl) effBarEl.style.width = lastEffWidth;
     }
 
     setInterval(() => {
@@ -1189,11 +1217,31 @@
       trip += dist;
       sessionDistance += dist;
       sessionEnergy += 0.0025; /* simulated continuous draw */
-      if (odometerEl) odometerEl.textContent = odometer.toFixed(1);
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
+
+      const newOdoText = odometer.toFixed(1);
+      if (odometerEl && newOdoText !== lastOdoText) {
+        odometerEl.textContent = newOdoText;
+        lastOdoText = newOdoText;
+      }
+
+      const newTripText = trip.toFixed(1);
+      if (tripEl && newTripText !== lastTripText) {
+        tripEl.textContent = newTripText;
+        lastTripText = newTripText;
+      }
+
       const eff = sessionEnergy > 0 ? sessionDistance / sessionEnergy : 0;
-      if (effEl) effEl.textContent = eff.toFixed(1);
-      if (effBarEl) effBarEl.style.width = Math.min(100, (eff / 12) * 100) + '%';
+      const newEffText = eff.toFixed(1);
+      if (effEl && newEffText !== lastEffText) {
+        effEl.textContent = newEffText;
+        lastEffText = newEffText;
+      }
+
+      const newEffWidth = Math.min(100, (eff / 12) * 100) + '%';
+      if (effBarEl && newEffWidth !== lastEffWidth) {
+        effBarEl.style.width = newEffWidth;
+        lastEffWidth = newEffWidth;
+      }
     }, 1000);
   </script>
 </body>
