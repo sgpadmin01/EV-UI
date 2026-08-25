@@ -1,0 +1,3 @@
+## 2026-08-25 - Focus-Visible Keyboard Accessibility for HMI Interactive Elements
+**Learning:** Standard programmatic focus calls in Playwright do not trigger CSS `:focus-visible` pseudo-class styling; simulating native Tab key presses is necessary. Custom composite controls (such as toggle switches built with hidden `<input>` elements) require targeted selector chaining (e.g., `.hmi-toggle input:focus-visible + .hmi-toggle-slider`) to render visible focus indicators correctly.
+**Action:** Always map `:focus-visible` styles to the visible visual target for non-standard input controls and verify using keyboard navigation simulation in E2E tests.
