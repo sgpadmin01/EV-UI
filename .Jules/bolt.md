@@ -1,0 +1,3 @@
+## 2026-03-30 - DOM Dirty-Checking Guards for High-Frequency Render Loops
+**Learning:** In framework-less vanillajs HMI applications, high-frequency animation loops (`requestAnimationFrame`) and periodic `setInterval` calls trigger redundant DOM property assignments (`textContent` and `style.width`) on every tick even when string values remain unchanged. This causes unnecessary browser layout reflows and style recalculations.
+**Action:** Always maintain lightweight primitive cache variables (e.g. `lastClockTime`, `lastRoundedSpeed`, `lastOdometerStr`) to dirty-check values prior to mutating DOM properties in animation frames or intervals.
