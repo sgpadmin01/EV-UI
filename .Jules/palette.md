@@ -1,0 +1,3 @@
+## 2025-05-18 - High-Contrast Focus Visible Rings for Vehicle HMI Controls
+**Learning:** Touchscreen vehicle HMI applications often rely on pointer touch inputs, but physical steering-wheel switches or rotary hardware encoders trigger keyboard navigation (`:focus-visible`). Without explicit high-contrast focus rings and `outline-offset`, focused controls are indistinguishable from unfocused ones during physical input navigation.
+**Action:** Always define explicit high-contrast `:focus-visible` ring styles with glowing shadows (`box-shadow: 0 0 8px ...`) and offset (`outline-offset: 2px`) for all interactive HMI components (buttons, nav tabs, sliders, toggles) while suppressing standard `:focus` outlines for touch/pointer taps.
