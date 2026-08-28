@@ -249,6 +249,10 @@
       cursor: pointer;
     }
     .sbc-btn:active { background: var(--accent-primary); color: #000000; }
+    .sbc-btn:focus-visible, .sbc-search:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
   </style>
 </head>
 <body>
@@ -354,13 +358,13 @@
 
     <!-- Bottom Action Bar -->
     <div class="sbc-bottombar">
-      <div class="sbc-search">
-        <i data-lucide="search" style="width:20px; height:20px; color:var(--accent-primary);"></i>
+      <div class="sbc-search" role="search" tabindex="0" aria-label="Search destination, field, or farm">
+        <i data-lucide="search" style="width:20px; height:20px; color:var(--accent-primary);" aria-hidden="true"></i>
         Search destination, field, farm…
       </div>
       <div class="sbc-zoom">
-        <button class="sbc-btn" onclick="mapZoom(-1)"><i data-lucide="minus" style="width:20px; height:20px;"></i></button>
-        <button class="sbc-btn" onclick="mapZoom(1)"><i data-lucide="plus" style="width:20px; height:20px;"></i></button>
+        <button class="sbc-btn" onclick="mapZoom(-1)" aria-label="Zoom out map"><i data-lucide="minus" style="width:20px; height:20px;" aria-hidden="true"></i></button>
+        <button class="sbc-btn" onclick="mapZoom(1)" aria-label="Zoom in map"><i data-lucide="plus" style="width:20px; height:20px;" aria-hidden="true"></i></button>
       </div>
     </div>
 
