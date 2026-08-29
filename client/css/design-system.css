@@ -408,6 +408,11 @@ html, body {
   filter: brightness(1.2);
 }
 
+.hmi-btn:focus-visible, .sbc-btn:focus-visible, .nav-tab:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
 .hmi-btn.primary {
   background: var(--accent-primary);
   border-color: var(--accent-primary);
