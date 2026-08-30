@@ -369,11 +369,17 @@
   <script>
     lucide.createIcons();
 
+    let lastNavClockText = '';
+    const navClockEl = document.getElementById('nav-clock');
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('nav-clock').textContent = `${h}:${m}`;
+      const timeStr = `${h}:${m}`;
+      if (navClockEl && timeStr !== lastNavClockText) {
+        navClockEl.textContent = timeStr;
+        lastNavClockText = timeStr;
+      }
     }
     setInterval(updateClock, 1000);
     updateClock();
