@@ -1,0 +1,3 @@
+## 2026-03-31 - DOM Dirty-Checking Guards in High-Frequency Render Loops
+**Learning:** In framework-less HMI applications, running DOM text updates on every frame of a high-frequency animation loop (e.g. `requestAnimationFrame` at 60 FPS) triggers unnecessary DOM text node mutations and layout recalculations even when values remain unchanged.
+**Action:** Cache element references and previous values (`lastValue`) outside high-frequency render routines (`requestAnimationFrame` or short-interval timers) and perform a dirty-check (`if (newValue !== lastValue)`) before setting `.textContent` or updating inline attributes.
