@@ -379,6 +379,12 @@ html, body {
   box-shadow: 0 0 10px var(--accent-glow);
 }
 
+/* Focus Indicators for Accessibility & Keyboard Navigation */
+:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
 /* Touch Buttons (Min height 48px, Touch Action Manipulation) */
 .hmi-btn {
   min-height: var(--touch-target-min);
@@ -494,6 +500,11 @@ html, body {
 .hmi-toggle input:checked + .hmi-toggle-slider:before {
   transform: translateX(26px);
   background-color: #000000;
+}
+
+.hmi-toggle input:focus-visible + .hmi-toggle-slider {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
 }
 
 /* Touch Range Slider (Smooth 28px Thumb) */
