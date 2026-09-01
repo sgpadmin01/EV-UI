@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import connectDB from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
+import { securityHeaders } from "./middleware/security.js";
 
 dotenv.config();
 
@@ -13,6 +14,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
+// Security Hardening: Disable Express signature header & set security headers
+app.disable("x-powered-by");
+app.use(securityHeaders);
 
 connectDB();
 
