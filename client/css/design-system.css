@@ -527,6 +527,21 @@ html, body {
   box-shadow: 0 0 10px var(--accent-primary);
 }
 
+/* =========================================================
+   ACCESSIBILITY & KEYBOARD FOCUS INDICATORS
+   ========================================================= */
+:focus-visible {
+  outline: 2px solid var(--accent-primary) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 12px var(--accent-glow) !important;
+}
+
+.hmi-toggle input:focus-visible + .hmi-toggle-slider {
+  outline: 2px solid var(--accent-primary) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 12px var(--accent-glow) !important;
+}
+
 /* Bottom HMI Navigation Bar (Fixed 64px Height) */
 .hmi-navbar {
   height: 64px;
