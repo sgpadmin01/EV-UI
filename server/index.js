@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import connectDB from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
+import securityHeaders from "./middleware/securityHeaders.js";
 
 dotenv.config();
 
@@ -14,10 +15,13 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+app.disable("x-powered-by");
+
 connectDB();
 
 app.use(cors());
 app.use(express.json());
+app.use(securityHeaders);
 
 // Serve Static Client HMI Files
 app.use(express.static(path.join(__dirname, "../client/pages")));
