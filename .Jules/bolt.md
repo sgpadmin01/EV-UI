@@ -1,0 +1,3 @@
+## 2025-05-18 - Dirty-Checking Cache Guards in Framework-less HMI Render Loops
+**Learning:** In vanilla/framework-less applications with continuous `requestAnimationFrame` animation loops or high-frequency `setInterval` callbacks (like clock and telemetry loops), updating DOM `textContent` or `style` properties unconditionally forces unnecessary style invalidations and layout reflows even when values remain identical.
+**Action:** Always wrap DOM text and style mutations in dirty-checking value equality guards (`val !== lastVal`) and cache DOM node queries outside render loops to avoid redundant browser re-renders.
