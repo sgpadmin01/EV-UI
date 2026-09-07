@@ -369,11 +369,13 @@
   <script>
     lucide.createIcons();
 
+    // Cache nav clock DOM element reference
+    const navClockEl = document.getElementById('nav-clock');
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('nav-clock').textContent = `${h}:${m}`;
+      if (navClockEl) navClockEl.textContent = `${h}:${m}`;
     }
     setInterval(updateClock, 1000);
     updateClock();

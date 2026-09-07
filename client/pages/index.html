@@ -1013,6 +1013,9 @@
   <script>
     lucide.createIcons();
 
+    // Cache nav tab elements to avoid querySelectorAll re-queries on every tab switch
+    const navTabs = document.querySelectorAll('.nav-tab');
+
     // Tab Navigation
     function switchTab(tabId) {
       const activePanel = document.querySelector('.view-panel.active');
@@ -1020,7 +1023,7 @@
 
       if (activePanel === targetPanel) return;
 
-      document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+      navTabs.forEach(tab => tab.classList.remove('active'));
 
       if (activePanel) {
         activePanel.style.opacity = '0';
@@ -1040,18 +1043,19 @@
         targetPanel.style.transform = 'translateY(0)';
       }
 
-      const activeBtn = Array.from(document.querySelectorAll('.nav-tab')).find(btn => 
+      const activeBtn = Array.from(navTabs).find(btn =>
         btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tabId)
       );
       if (activeBtn) activeBtn.classList.add('active');
     }
 
-    // Real-Time Clock
+    // Real-Time Clock with cached DOM lookup
+    const clockEl = document.getElementById('hmi-clock');
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('hmi-clock').textContent = `${h}:${m}`;
+      if (clockEl) clockEl.textContent = `${h}:${m}`;
     }
     setInterval(updateClock, 1000);
     updateClock();
