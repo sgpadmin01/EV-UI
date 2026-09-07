@@ -1,0 +1,3 @@
+## 2026-09-07 - HMI Keyboard Focus and Form Control ARIA Associations
+**Learning:** Framework-less touch HMI applications often lack native `:focus-visible` ring outlines and ARIA associations for custom toggle switches and sliders, breaking accessibility for hardware/keyboard steering wheel controllers. Programmatic `.focus()` in Playwright tests does not trigger `:focus-visible` styles; native keyboard interactions (e.g. `page.keyboard.press("Tab")`) must be used for verification.
+**Action:** Always map custom input IDs to label elements via `aria-labelledby` or `for`, set `aria-pressed` on toggle button groups, and provide explicit `:focus-visible` outline styles in CSS.
