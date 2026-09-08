@@ -1,0 +1,3 @@
+## 2026-09-08 - Accessible Names and Focus Indicators on Touch HMI Components
+**Learning:** In framework-less HTML touch interfaces, custom toggle switches (`.hmi-toggle`) and range sliders rendered next to text labels (`<span class="hmi-label">`) lack explicit screen reader associations unless bound with `aria-label`. Additionally, keyboard navigation requires explicit `:focus-visible` CSS rules mapped to active component inputs and button selectors.
+**Action:** Always provide `aria-label` attributes on custom input components and declare `:focus-visible` rules in `design-system.css` for interactive buttons, tabs, sliders, and toggles.
