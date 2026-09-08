@@ -1046,12 +1046,16 @@
       if (activeBtn) activeBtn.classList.add('active');
     }
 
-    // Real-Time Clock
+    // Real-Time Clock with dirty-checking guard to prevent unnecessary DOM mutations
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('hmi-clock').textContent = `${h}:${m}`;
+      const clockStr = `${h}:${m}`;
+      const clockEl = document.getElementById('hmi-clock');
+      if (clockEl && clockEl.textContent !== clockStr) {
+        clockEl.textContent = clockStr;
+      }
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -1091,9 +1095,11 @@
       if (gaugeNeedle) gaugeNeedle.style.transform = `rotate(${angle}deg)`;
       const offset = OFFSET_EMPTY - fraction * ARC_FILL_LENGTH;
       if (gaugeArc) gaugeArc.style.strokeDashoffset = offset;
-      const roundedSpeed = Math.round(speed);
-      if (speedText) speedText.textContent = roundedSpeed;
-      if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      const roundedSpeed = String(Math.round(speed));
+      const roundedRpm = String(Math.round(Math.round(speed) * 42));
+      // Performance optimization: dirty-check before setting textContent on requestAnimationFrame calls
+      if (speedText && speedText.textContent !== roundedSpeed) speedText.textContent = roundedSpeed;
+      if (rpmText && rpmText.textContent !== roundedRpm) rpmText.textContent = roundedRpm;
     }
 
     function updateSpeed(newSpeed, duration = 450) {
@@ -1138,14 +1144,19 @@
       if (bootProgress >= 100) {
         clearInterval(bootTimer);
         splashFill.style.width = '100%';
-        splashStatus.textContent = 'SYSTEMS READY';
+        if (splashStatus && splashStatus.textContent !== 'SYSTEMS READY') {
+          splashStatus.textContent = 'SYSTEMS READY';
+        }
         setTimeout(() => {
           splashEl.classList.add('gone');
           setTimeout(() => splashEl.remove(), 500);
         }, 300);
       } else {
         splashFill.style.width = bootProgress + '%';
-        splashStatus.textContent = bootSteps[Math.min(bootSteps.length - 1, Math.floor(bootProgress / 25))];
+        const nextStep = bootSteps[Math.min(bootSteps.length - 1, Math.floor(bootProgress / 25))];
+        if (splashStatus && splashStatus.textContent !== nextStep) {
+          splashStatus.textContent = nextStep;
+        }
       }
     }, 160);
 
@@ -1178,8 +1189,8 @@
       trip = 0.0;
       sessionDistance = 0.0;
       sessionEnergy = 0.0;
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
-      if (effEl) effEl.textContent = '0.0';
+      if (tripEl && tripEl.textContent !== '0.0') tripEl.textContent = '0.0';
+      if (effEl && effEl.textContent !== '0.0') effEl.textContent = '0.0';
       if (effBarEl) effBarEl.style.width = '0%';
     }
 
@@ -1189,10 +1200,16 @@
       trip += dist;
       sessionDistance += dist;
       sessionEnergy += 0.0025; /* simulated continuous draw */
-      if (odometerEl) odometerEl.textContent = odometer.toFixed(1);
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
+
+      const odoStr = odometer.toFixed(1);
+      const tripStr = trip.toFixed(1);
       const eff = sessionEnergy > 0 ? sessionDistance / sessionEnergy : 0;
-      if (effEl) effEl.textContent = eff.toFixed(1);
+      const effStr = eff.toFixed(1);
+
+      // Performance optimization: dirty-check before writing telemetry strings to DOM
+      if (odometerEl && odometerEl.textContent !== odoStr) odometerEl.textContent = odoStr;
+      if (tripEl && tripEl.textContent !== tripStr) tripEl.textContent = tripStr;
+      if (effEl && effEl.textContent !== effStr) effEl.textContent = effStr;
       if (effBarEl) effBarEl.style.width = Math.min(100, (eff / 12) * 100) + '%';
     }, 1000);
   </script>
