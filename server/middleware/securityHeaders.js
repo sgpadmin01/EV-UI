@@ -1,0 +1,14 @@
+/**
+ * Security headers middleware to protect Express responses against common web vulnerabilities
+ * (e.g. MIME-type sniffing, clickjacking, unsafe referrers).
+ */
+const securityHeaders = (req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "0");
+  res.setHeader("Referrer-Policy", "no-referrer");
+  res.setHeader("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
+  next();
+};
+
+export default securityHeaders;
