@@ -369,11 +369,18 @@
   <script>
     lucide.createIcons();
 
+    // Real-Time Clock with dirty-checking cache to avoid redundant DOM writes
+    let lastNavClockText = '';
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('nav-clock').textContent = `${h}:${m}`;
+      const timeStr = `${h}:${m}`;
+      if (timeStr !== lastNavClockText) {
+        const clockEl = document.getElementById('nav-clock');
+        if (clockEl) clockEl.textContent = timeStr;
+        lastNavClockText = timeStr;
+      }
     }
     setInterval(updateClock, 1000);
     updateClock();

@@ -1046,12 +1046,18 @@
       if (activeBtn) activeBtn.classList.add('active');
     }
 
-    // Real-Time Clock
+    // Real-Time Clock with dirty-checking cache to avoid 59/60 redundant DOM writes per min
+    let lastClockText = '';
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('hmi-clock').textContent = `${h}:${m}`;
+      const timeStr = `${h}:${m}`;
+      if (timeStr !== lastClockText) {
+        const clockEl = document.getElementById('hmi-clock');
+        if (clockEl) clockEl.textContent = timeStr;
+        lastClockText = timeStr;
+      }
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -1082,6 +1088,7 @@
     const rpmText = document.getElementById('dash-rpm');
 
     let currentSpeedVal = 0; let targetSpeedVal = 0; let animationFrameId = null; let animStartTime = null; let animStartSpeed = 0;
+    let lastRoundedSpeed = null; let lastRpmVal = null;
 
     function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
@@ -1091,9 +1098,18 @@
       if (gaugeNeedle) gaugeNeedle.style.transform = `rotate(${angle}deg)`;
       const offset = OFFSET_EMPTY - fraction * ARC_FILL_LENGTH;
       if (gaugeArc) gaugeArc.style.strokeDashoffset = offset;
+
+      // Dirty-check text node mutations in 60 FPS rAF loop to avoid redundant DOM dirtying
       const roundedSpeed = Math.round(speed);
-      if (speedText) speedText.textContent = roundedSpeed;
-      if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      if (speedText && roundedSpeed !== lastRoundedSpeed) {
+        speedText.textContent = roundedSpeed;
+        lastRoundedSpeed = roundedSpeed;
+      }
+      const roundedRpm = Math.round(roundedSpeed * 42);
+      if (rpmText && roundedRpm !== lastRpmVal) {
+        rpmText.textContent = roundedRpm;
+        lastRpmVal = roundedRpm;
+      }
     }
 
     function updateSpeed(newSpeed, duration = 450) {
@@ -1183,17 +1199,36 @@
       if (effBarEl) effBarEl.style.width = '0%';
     }
 
+    // Cache guards for telemetry interval updates
+    let lastOdoStr = '', lastTripStr = '', lastEffStr = '', lastEffWidth = '';
     setInterval(() => {
       const dist = currentSpeedVal / 3600; /* km per second at current speed */
       odometer += dist;
       trip += dist;
       sessionDistance += dist;
       sessionEnergy += 0.0025; /* simulated continuous draw */
-      if (odometerEl) odometerEl.textContent = odometer.toFixed(1);
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
+
+      const odoStr = odometer.toFixed(1);
+      if (odometerEl && odoStr !== lastOdoStr) {
+        odometerEl.textContent = odoStr;
+        lastOdoStr = odoStr;
+      }
+      const tripStr = trip.toFixed(1);
+      if (tripEl && tripStr !== lastTripStr) {
+        tripEl.textContent = tripStr;
+        lastTripStr = tripStr;
+      }
       const eff = sessionEnergy > 0 ? sessionDistance / sessionEnergy : 0;
-      if (effEl) effEl.textContent = eff.toFixed(1);
-      if (effBarEl) effBarEl.style.width = Math.min(100, (eff / 12) * 100) + '%';
+      const effStr = eff.toFixed(1);
+      if (effEl && effStr !== lastEffStr) {
+        effEl.textContent = effStr;
+        lastEffStr = effStr;
+      }
+      const effWidthStr = Math.min(100, (eff / 12) * 100) + '%';
+      if (effBarEl && effWidthStr !== lastEffWidth) {
+        effBarEl.style.width = effWidthStr;
+        lastEffWidth = effWidthStr;
+      }
     }, 1000);
   </script>
 </body>
