@@ -77,6 +77,17 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Keyboard Focus Accessibility */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-primary) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 8px var(--accent-glow) !important;
+}
+
 html, body {
   width: 1024px;
   height: 600px;
@@ -494,6 +505,12 @@ html, body {
 .hmi-toggle input:checked + .hmi-toggle-slider:before {
   transform: translateX(26px);
   background-color: #000000;
+}
+
+.hmi-toggle input:focus-visible + .hmi-toggle-slider {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 10px var(--accent-glow);
 }
 
 /* Touch Range Slider (Smooth 28px Thumb) */
