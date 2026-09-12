@@ -5,6 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import connectDB from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
+import securityHeaders from "./middleware/securityHeaders.js";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
 
 dotenv.config();
@@ -14,8 +15,11 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+app.disable("x-powered-by");
+
 connectDB();
 
+app.use(securityHeaders);
 app.use(cors());
 app.use(express.json());
 
