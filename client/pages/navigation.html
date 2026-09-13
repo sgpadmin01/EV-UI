@@ -359,8 +359,12 @@
         Search destination, field, farm…
       </div>
       <div class="sbc-zoom">
-        <button class="sbc-btn" onclick="mapZoom(-1)"><i data-lucide="minus" style="width:20px; height:20px;"></i></button>
-        <button class="sbc-btn" onclick="mapZoom(1)"><i data-lucide="plus" style="width:20px; height:20px;"></i></button>
+        <button class="sbc-btn" onclick="mapZoom(-1)" aria-label="Zoom out" title="Zoom out">
+          <i data-lucide="minus" style="width:20px; height:20px;" aria-hidden="true"></i>
+        </button>
+        <button class="sbc-btn" onclick="mapZoom(1)" aria-label="Zoom in" title="Zoom in">
+          <i data-lucide="plus" style="width:20px; height:20px;" aria-hidden="true"></i>
+        </button>
       </div>
     </div>
 
