@@ -1,0 +1,3 @@
+## 2026-09-13 - High-Frequency DOM Operation Dirty-Checking Guard
+**Learning:** In vanilla/framework-less HMI applications using `requestAnimationFrame` and `setInterval` loops for real-time telemetry and clock readouts, DOM element lookups (`document.getElementById`) and unconditional property assignments (`.textContent`, `.style.width`) trigger frequent micro-tasks and unnecessary DOM layout reflows even when formatted values remain static.
+**Action:** Always cache DOM element references outside loop callbacks and apply state-equality dirty-checking guards (`if (newValue !== lastValue)`) before touching DOM properties on high-frequency channels.
