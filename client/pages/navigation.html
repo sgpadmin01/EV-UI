@@ -232,6 +232,20 @@
       font-size: var(--font-body);
       font-weight: 700;
     }
+    .sbc-search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-size: var(--font-body);
+      font-weight: 700;
+      outline: none;
+      font-family: var(--font-family-sans);
+    }
+    .sbc-search-input::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.8;
+    }
     .sbc-zoom {
       display: flex;
       gap: var(--space-xs);
@@ -355,12 +369,12 @@
     <!-- Bottom Action Bar -->
     <div class="sbc-bottombar">
       <div class="sbc-search">
-        <i data-lucide="search" style="width:20px; height:20px; color:var(--accent-primary);"></i>
-        Search destination, field, farm…
+        <i data-lucide="search" style="width:20px; height:20px; color:var(--accent-primary); flex-shrink:0;"></i>
+        <input type="search" class="sbc-search-input" placeholder="Search destination, field, farm…" aria-label="Search destination">
       </div>
       <div class="sbc-zoom">
-        <button class="sbc-btn" onclick="mapZoom(-1)"><i data-lucide="minus" style="width:20px; height:20px;"></i></button>
-        <button class="sbc-btn" onclick="mapZoom(1)"><i data-lucide="plus" style="width:20px; height:20px;"></i></button>
+        <button class="sbc-btn" onclick="mapZoom(-1)" aria-label="Zoom out"><i data-lucide="minus" style="width:20px; height:20px;"></i></button>
+        <button class="sbc-btn" onclick="mapZoom(1)" aria-label="Zoom in"><i data-lucide="plus" style="width:20px; height:20px;"></i></button>
       </div>
     </div>
 
