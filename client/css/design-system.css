@@ -77,6 +77,19 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Accessible Focus Visible Styles */
+:focus-visible {
+  outline: 2px solid var(--accent-primary) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 10px var(--accent-glow) !important;
+}
+
+.hmi-toggle input:focus-visible + .hmi-toggle-slider {
+  outline: 2px solid var(--accent-primary) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 10px var(--accent-glow) !important;
+}
+
 html, body {
   width: 1024px;
   height: 600px;
