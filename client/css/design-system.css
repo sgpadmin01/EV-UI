@@ -572,3 +572,16 @@ html, body {
 .nav-tab.active {
   border-top: 3px solid var(--accent-primary);
 }
+
+/* Accessibility Focus-Visible Ring Indicator */
+:focus-visible {
+  outline: 2px solid var(--accent-primary) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 12px var(--accent-glow) !important;
+}
+
+.hmi-toggle input:focus-visible + .hmi-toggle-slider {
+  outline: 2px solid var(--accent-primary) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 12px var(--accent-glow) !important;
+}
