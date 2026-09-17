@@ -1046,12 +1046,16 @@
       if (activeBtn) activeBtn.classList.add('active');
     }
 
-    // Real-Time Clock
+    // Real-Time Clock (Cached DOM reference & guarded update to prevent layout reflows)
+    const clockEl = document.getElementById('hmi-clock');
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('hmi-clock').textContent = `${h}:${m}`;
+      const timeStr = `${h}:${m}`;
+      if (clockEl && clockEl.textContent !== timeStr) {
+        clockEl.textContent = timeStr;
+      }
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -1092,8 +1096,11 @@
       const offset = OFFSET_EMPTY - fraction * ARC_FILL_LENGTH;
       if (gaugeArc) gaugeArc.style.strokeDashoffset = offset;
       const roundedSpeed = Math.round(speed);
-      if (speedText) speedText.textContent = roundedSpeed;
-      if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      const roundedSpeedStr = String(roundedSpeed);
+      /* Performance optimization: guard DOM string updates to avoid unnecessary layout reflows on high-frequency animation frames */
+      if (speedText && speedText.textContent !== roundedSpeedStr) speedText.textContent = roundedSpeedStr;
+      const rpmStr = String(Math.round(roundedSpeed * 42));
+      if (rpmText && rpmText.textContent !== rpmStr) rpmText.textContent = rpmStr;
     }
 
     function updateSpeed(newSpeed, duration = 450) {
@@ -1189,11 +1196,20 @@
       trip += dist;
       sessionDistance += dist;
       sessionEnergy += 0.0025; /* simulated continuous draw */
-      if (odometerEl) odometerEl.textContent = odometer.toFixed(1);
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
+
+      /* Performance optimization: cache strings & apply dirty-checking guards before DOM writes in high-frequency interval */
+      const odoStr = odometer.toFixed(1);
+      if (odometerEl && odometerEl.textContent !== odoStr) odometerEl.textContent = odoStr;
+
+      const tripStr = trip.toFixed(1);
+      if (tripEl && tripEl.textContent !== tripStr) tripEl.textContent = tripStr;
+
       const eff = sessionEnergy > 0 ? sessionDistance / sessionEnergy : 0;
-      if (effEl) effEl.textContent = eff.toFixed(1);
-      if (effBarEl) effBarEl.style.width = Math.min(100, (eff / 12) * 100) + '%';
+      const effStr = eff.toFixed(1);
+      if (effEl && effEl.textContent !== effStr) effEl.textContent = effStr;
+
+      const effPctStr = Math.min(100, (eff / 12) * 100).toFixed(1) + '%';
+      if (effBarEl && effBarEl.style.width !== effPctStr) effBarEl.style.width = effPctStr;
     }, 1000);
   </script>
 </body>
