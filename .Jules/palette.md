@@ -1,0 +1,3 @@
+## 2026-03-31 - Touchscreen Option Groups and Custom Controls Accessibility
+**Learning:** Embedded touchscreen HMI custom range sliders, toggles, and button group selectors (like regenerative braking level controls) often lack native `<label for="...">` associations and screen-reader state attributes (`aria-pressed`, `aria-labelledby`, `role="group"`), leaving voiceover users without context or feedback when interacting with touch elements.
+**Action:** Always wrap custom button option grids with `role="group"` and `aria-labelledby`, and ensure click handlers toggle `aria-pressed="true"/"false"` alongside visual `.active`/`.primary` classes.
