@@ -1,0 +1,3 @@
+## 2026-03-30 - High-Contrast Keyboard Focus & ARIA Association in Dark Touch HMIs
+**Learning:** Custom embedded touch controls (like slider tracks and styled toggle checkboxes) frequently hide native inputs with `opacity: 0`, which breaks native browser focus rings and leaves screen-reader users without input descriptions unless explicit `:focus-visible` outline mappings and `aria-label` attributes are applied.
+**Action:** When working on framework-less dark UI design systems, always pair custom CSS switch structures with `:focus-visible` rules targeted to adjacent visual elements (e.g. `.hmi-toggle input:focus-visible + .hmi-toggle-slider`) and add explicit `aria-label`s on icon-only and hidden controls.
