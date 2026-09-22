@@ -1,0 +1,3 @@
+## 2026-03-30 - Custom HMI Toggle Switch Focus Outlines and Screen Reader Association
+**Learning:** Custom HMI toggle switch components hiding native checkbox inputs (`opacity: 0`) lose visual focus state unless `:focus-visible` is explicitly mapped onto their adjacent visible element (`.hmi-toggle input:focus-visible + .hmi-toggle-slider`). Additionally, icon-only zoom buttons on touchscreen navigation interfaces require explicit `aria-label`s to be accessible to screen readers.
+**Action:** Always map `:focus-visible` onto adjacent custom switch sliders for hidden inputs, and ensure all icon-only action buttons are decorated with `aria-label`.
