@@ -16,7 +16,19 @@ const app = express();
 
 connectDB();
 
-app.use(cors());
+// Restrict CORS to explicitly defined client origin if set, defaulting to same-origin
+const corsOptions = {
+  origin: process.env.CLIENT_URL || false,
+};
+app.use(cors(corsOptions));
+
+// HTTP Security Headers middleware
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  next();
+});
+
 app.use(express.json());
 
 // Serve Static Client HMI Files
