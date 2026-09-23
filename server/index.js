@@ -14,6 +14,9 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Disable x-powered-by header to prevent Express fingerprinting
+app.disable("x-powered-by");
+
 connectDB();
 
 app.use(cors());
