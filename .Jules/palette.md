@@ -1,0 +1,3 @@
+## 2026-03-30 - Focus-Visible States on Custom Touch Inputs & Playwright Verification
+**Learning:** Custom HMI touch inputs (like CSS toggle switches wrapped around hidden checkbox inputs) require `input:focus-visible + .hmi-toggle-slider` mapping to display focus rings when navigating via keyboard or switch-access devices. Programmatic `.focus()` does not trigger `:focus-visible` in Playwright; actual keyboard 'Tab' presses must be dispatched.
+**Action:** Always map `:focus-visible` to the visible custom control sibling/child and verify using keyboard navigation events in automated E2E tests.
