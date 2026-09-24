@@ -1047,11 +1047,18 @@
     }
 
     // Real-Time Clock
+    const clockEl = document.getElementById('hmi-clock');
+    let lastClockText = '';
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('hmi-clock').textContent = `${h}:${m}`;
+      const timeStr = `${h}:${m}`;
+      /* Bolt performance optimization: Dirty-check time string to avoid redundant DOM mutations every second */
+      if (clockEl && timeStr !== lastClockText) {
+        clockEl.textContent = timeStr;
+        lastClockText = timeStr;
+      }
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -1082,6 +1089,8 @@
     const rpmText = document.getElementById('dash-rpm');
 
     let currentSpeedVal = 0; let targetSpeedVal = 0; let animationFrameId = null; let animStartTime = null; let animStartSpeed = 0;
+    let lastSpeedText = null;
+    let lastRpmText = null;
 
     function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
@@ -1091,9 +1100,19 @@
       if (gaugeNeedle) gaugeNeedle.style.transform = `rotate(${angle}deg)`;
       const offset = OFFSET_EMPTY - fraction * ARC_FILL_LENGTH;
       if (gaugeArc) gaugeArc.style.strokeDashoffset = offset;
+
+      /* Bolt performance optimization: Cache DOM text updates using dirty checking
+         to prevent redundant DOM mutations and layout reflows during 60fps gauge animations */
       const roundedSpeed = Math.round(speed);
-      if (speedText) speedText.textContent = roundedSpeed;
-      if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      if (speedText && roundedSpeed !== lastSpeedText) {
+        speedText.textContent = roundedSpeed;
+        lastSpeedText = roundedSpeed;
+      }
+      const calculatedRpm = Math.round(roundedSpeed * 42);
+      if (rpmText && calculatedRpm !== lastRpmText) {
+        rpmText.textContent = calculatedRpm;
+        lastRpmText = calculatedRpm;
+      }
     }
 
     function updateSpeed(newSpeed, duration = 450) {
