@@ -19,6 +19,20 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
+// Security headers middleware
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "0");
+  res.setHeader("Referrer-Policy", "no-referrer");
+  res.setHeader("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;"
+  );
+  next();
+});
+
 // Serve Static Client HMI Files
 app.use(express.static(path.join(__dirname, "../client/pages")));
 app.use("/css", express.static(path.join(__dirname, "../client/css")));
