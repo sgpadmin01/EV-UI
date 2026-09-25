@@ -1,0 +1,3 @@
+## 2026-03-31 - Dirty-checking High-Frequency HMI Animation & Telemetry Loops
+**Learning:** High-frequency DOM updates (such as `requestAnimationFrame` speed/RPM gauge renders or 1000ms clock/telemetry intervals) frequently trigger redundant `.textContent` and `.style` mutations even when the calculated/rounded display value has not changed. This induces unnecessary style recalculations and layout reflows on embedded displays.
+**Action:** Always cache DOM element selectors outside interval/animation callbacks and guard DOM node mutations with stateful equality checks (`if (element && newValue !== lastValue)`).
