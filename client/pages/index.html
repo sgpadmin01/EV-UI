@@ -586,7 +586,7 @@
     <main class="hmi-content">
 
       <!-- SCREEN 1: MAIN DASHBOARD -->
-      <section id="view-dashboard" class="view-panel active">
+      <section id="view-dashboard" class="view-panel active" role="tabpanel" aria-labelledby="tab-dashboard">
         <div class="dashboard-grid">
 
           <!-- Left: Distance & Efficiency -->
@@ -698,7 +698,7 @@
       </section>
 
       <!-- SCREEN 2: CHARGING SCREEN -->
-      <section id="view-charging" class="view-panel">
+      <section id="view-charging" class="view-panel" role="tabpanel" aria-labelledby="tab-charging">
         <div class="section-header">
           <i data-lucide="battery-charging" style="width:20px; height:20px;"></i> Charging Station & BMS Monitor
         </div>
@@ -760,7 +760,7 @@
       </section>
 
       <!-- SCREEN 3: FAULT DIAGNOSTICS SCREEN (WITH TOUCH MOMENTUM SCROLLING) -->
-      <section id="view-faults" class="view-panel">
+      <section id="view-faults" class="view-panel" role="tabpanel" aria-labelledby="tab-faults">
         <div class="section-header">
           <i data-lucide="shield-alert" style="width:20px; height:20px;"></i> Vehicle Diagnostics & Fault Log
         </div>
@@ -846,7 +846,7 @@
       </section>
 
       <!-- SCREEN 4: SETTINGS SCREEN (TOUCH SCROLLABLE) -->
-      <section id="view-settings" class="view-panel">
+      <section id="view-settings" class="view-panel" role="tabpanel" aria-labelledby="tab-settings">
         <div class="section-header">
           <i data-lucide="sliders" style="width:20px; height:20px;"></i> System Settings & Touch Controls
         </div>
@@ -911,7 +911,7 @@
       </section>
 
       <!-- SCREEN 5: INFO SCREEN -->
-      <section id="view-info" class="view-panel">
+      <section id="view-info" class="view-panel" role="tabpanel" aria-labelledby="tab-info">
         <div class="section-header">
           <i data-lucide="info" style="width:20px; height:20px;"></i> Vehicle System Specifications
         </div>
@@ -947,28 +947,28 @@
     </main>
 
     <!-- Bottom Navigation Bar -->
-    <nav class="hmi-navbar">
-      <button class="nav-tab active" onclick="switchTab('dashboard')">
+    <nav class="hmi-navbar" role="tablist" aria-label="Main Navigation">
+      <button class="nav-tab active" id="tab-dashboard" role="tab" aria-selected="true" aria-controls="view-dashboard" onclick="switchTab('dashboard')">
         <i data-lucide="layout-dashboard"></i>
         <span class="nav-tab-label">Dashboard</span>
       </button>
-      <button class="nav-tab" onclick="switchTab('charging')">
+      <button class="nav-tab" id="tab-charging" role="tab" aria-selected="false" aria-controls="view-charging" onclick="switchTab('charging')">
         <i data-lucide="battery-charging"></i>
         <span class="nav-tab-label">Charging</span>
       </button>
-      <button class="nav-tab" onclick="switchTab('faults')">
+      <button class="nav-tab" id="tab-faults" role="tab" aria-selected="false" aria-controls="view-faults" onclick="switchTab('faults')">
         <i data-lucide="shield-alert"></i>
         <span class="nav-tab-label">Faults</span>
       </button>
-      <button class="nav-tab" onclick="switchTab('settings')">
+      <button class="nav-tab" id="tab-settings" role="tab" aria-selected="false" aria-controls="view-settings" onclick="switchTab('settings')">
         <i data-lucide="sliders"></i>
         <span class="nav-tab-label">Settings</span>
       </button>
-      <button class="nav-tab" onclick="switchTab('info')">
+      <button class="nav-tab" id="tab-info" role="tab" aria-selected="false" aria-controls="view-info" onclick="switchTab('info')">
         <i data-lucide="info"></i>
         <span class="nav-tab-label">Info</span>
       </button>
-      <button class="nav-tab" onclick="window.location.href='navigation.html'">
+      <button class="nav-tab" id="tab-nav" role="tab" aria-selected="false" aria-label="Navigation Screen" onclick="window.location.href='navigation.html'">
         <i data-lucide="navigation"></i>
         <span class="nav-tab-label">Nav</span>
       </button>
@@ -1020,7 +1020,10 @@
 
       if (activePanel === targetPanel) return;
 
-      document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('active');
+        tab.setAttribute('aria-selected', 'false');
+      });
 
       if (activePanel) {
         activePanel.style.opacity = '0';
@@ -1043,7 +1046,10 @@
       const activeBtn = Array.from(document.querySelectorAll('.nav-tab')).find(btn => 
         btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tabId)
       );
-      if (activeBtn) activeBtn.classList.add('active');
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+        activeBtn.setAttribute('aria-selected', 'true');
+      }
     }
 
     // Real-Time Clock
