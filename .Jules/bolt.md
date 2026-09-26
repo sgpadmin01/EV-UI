@@ -1,0 +1,3 @@
+## 2026-03-30 - DOM Dirty-Checking in High-Frequency Animation Loops
+**Learning:** In framework-less HMI applications running 60fps requestAnimationFrame or high-frequency interval loops (such as speedometer gauges, clocks, and telemetry readouts), unconditionally mutating DOM `.textContent` on every frame causes unnecessary DOM node invalidation and layout reflows, even when formatted values remain identical across frames.
+**Action:** Always maintain cache state variables (`lastVal`) to perform dirty-checking before updating DOM properties inside high-frequency animation frames or interval callbacks.
