@@ -572,3 +572,20 @@ html, body {
 .nav-tab.active {
   border-top: 3px solid var(--accent-primary);
 }
+
+/* Accessibility Focus States for Keyboard Navigation */
+:focus-visible {
+  outline: 2px solid var(--accent-primary) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 12px var(--accent-glow) !important;
+}
+
+.nav-tab:focus-visible {
+  background: rgba(0, 229, 255, 0.15);
+  outline-offset: -2px !important;
+}
+
+.hmi-toggle input:focus-visible + .hmi-toggle-slider {
+  outline: 2px solid var(--accent-primary) !important;
+  outline-offset: 2px !important;
+}

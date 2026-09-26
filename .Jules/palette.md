@@ -1,0 +1,3 @@
+## 2026-09-26 - Accessible Tab Navigation & High-Contrast Focus States for Touch HMIs
+**Learning:** Fixed-screen touch HMI interfaces often rely on custom CSS classes (`.active`) for visual tab switching without exposing standard ARIA roles (`role="tablist"`, `role="tab"`, `role="tabpanel"`) or `:focus-visible` styles. This makes keyboard navigation invisible and breaks screen reader announcements for view changes.
+**Action:** Always pair custom tab switching JavaScript with dynamic `aria-selected` toggling ("true"/"false"), assign `aria-controls` / `aria-labelledby` linkages between tabs and view panels, and provide high-contrast `:focus-visible` outline styles with subtle ambient glow matching the dark design system.
