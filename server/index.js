@@ -16,6 +16,20 @@ const app = express();
 
 connectDB();
 
+// Security headers middleware
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  res.setHeader("Referrer-Policy", "no-referrer-when-downgrade");
+  res.setHeader("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';"
+  );
+  next();
+});
+
 app.use(cors());
 app.use(express.json());
 
