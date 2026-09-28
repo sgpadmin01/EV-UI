@@ -77,6 +77,22 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Accessible Focus Visible Outlines for Keyboard Navigation */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+.hmi-btn:focus-visible,
+.nav-tab:focus-visible,
+.sbc-btn:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+.hmi-toggle input:focus-visible + .hmi-toggle-slider {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
 html, body {
   width: 1024px;
   height: 600px;
