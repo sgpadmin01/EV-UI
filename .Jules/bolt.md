@@ -1,0 +1,3 @@
+## 2026-09-28 - Dirty-Checking High-Frequency HMI Animation and Telemetry DOM Updates
+**Learning:** Framework-less HMI interfaces running 60 FPS `requestAnimationFrame` animation loops and 1s `setInterval` timers perform frequent DOM text and style mutations (`textContent`, `style.width`). Without dirty-checking guard variables, text nodes are mutated on every single frame/tick even when rounded integer values or formatted time strings remain identical, triggering unnecessary browser restyle and layout recalculation.
+**Action:** Always maintain previous value cache guards (`lastVal`) when binding high-frequency JS animation or telemetry signals to DOM nodes in vanilla JS HMI applications.
