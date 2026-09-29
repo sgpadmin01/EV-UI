@@ -14,7 +14,19 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+app.disable("x-powered-by");
+
 connectDB();
+
+// Security Headers Middleware
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  res.setHeader("Referrer-Policy", "no-referrer");
+  res.setHeader("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
+  next();
+});
 
 app.use(cors());
 app.use(express.json());
