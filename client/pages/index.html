@@ -571,7 +571,7 @@
         </div>
       </div>
       <div class="hmi-header-right">
-        <button class="hmi-hazard-btn" id="hazard-btn" onclick="toggleHazard(true)">
+        <button class="hmi-hazard-btn" id="hazard-btn" aria-label="Toggle Hazard Overlay" onclick="toggleHazard(true)">
           <i data-lucide="shield-alert" style="width:16px; height:16px;"></i> Hazard
         </button>
         <div class="hmi-header-clock" id="hmi-clock">14:30</div>
@@ -606,7 +606,7 @@
                 <span class="hmi-label">Trip Meter</span>
               </div>
               <div class="dash-value"><span id="dash-trip">0.0</span><span class="hmi-unit">km</span></div>
-              <button class="hmi-btn dash-trip-btn" onclick="resetTrip()">
+              <button class="hmi-btn dash-trip-btn" aria-label="Reset Trip Meter" onclick="resetTrip()">
                 <i data-lucide="rotate-ccw" style="width:14px; height:14px;"></i> Reset
               </button>
             </div>
@@ -768,7 +768,7 @@
           <div class="hmi-card" style="flex:1; padding: 6px 12px;">
             <div class="hmi-card-header" style="margin-bottom:8px;">
               <span class="hmi-label">Active System DTCs</span>
-              <button class="hmi-btn" id="btn-clear-faults"><i data-lucide="rotate-ccw" style="width:18px; height:18px;"></i> Clear Faults</button>
+                <button class="hmi-btn" id="btn-clear-faults" aria-label="Clear Fault Diagnostics Log"><i data-lucide="rotate-ccw" style="width:18px; height:18px;"></i> Clear Faults</button>
             </div>
             
             <!-- TOUCH SCROLLABLE CONTAINER WITH HIDDEN SCROLLBAR -->
@@ -858,22 +858,22 @@
                 <span class="hmi-value" style="font-size:20px;" id="brightness-val">80%</span>
               </div>
               <div class="hmi-slider-container" style="margin-top:14px;">
-                <i data-lucide="sun" style="width:22px; height:22px; color:var(--text-secondary);"></i>
-                <input type="range" class="hmi-slider" min="10" max="100" value="80" id="brightness-slider">
+                <i data-lucide="sun" style="width:22px; height:22px; color:var(--text-secondary);" aria-hidden="true"></i>
+                <input type="range" class="hmi-slider" min="10" max="100" value="80" id="brightness-slider" aria-label="Display Brightness" aria-valuemin="10" aria-valuemax="100" aria-valuenow="80">
               </div>
 
               <div class="hmi-toggle-wrapper" style="margin-top:14px;">
-                <span class="hmi-label">Auto Screen Timeout</span>
+                <span class="hmi-label" id="lbl-auto-timeout">Auto Screen Timeout</span>
                 <label class="hmi-toggle">
-                  <input type="checkbox" checked>
+                  <input type="checkbox" checked aria-labelledby="lbl-auto-timeout">
                   <span class="hmi-toggle-slider"></span>
                 </label>
               </div>
 
               <div class="hmi-toggle-wrapper">
-                <span class="hmi-label">Touch Beep Feedback</span>
+                <span class="hmi-label" id="lbl-touch-beep">Touch Beep Feedback</span>
                 <label class="hmi-toggle">
-                  <input type="checkbox" checked>
+                  <input type="checkbox" checked aria-labelledby="lbl-touch-beep">
                   <span class="hmi-toggle-slider"></span>
                 </label>
               </div>
@@ -891,17 +891,17 @@
               </div>
 
               <div class="hmi-toggle-wrapper" style="margin-top:14px;">
-                <span class="hmi-label">Max Speed Limiter (40 km/h)</span>
+                <span class="hmi-label" id="lbl-speed-limiter">Max Speed Limiter (40 km/h)</span>
                 <label class="hmi-toggle">
-                  <input type="checkbox">
+                  <input type="checkbox" aria-labelledby="lbl-speed-limiter">
                   <span class="hmi-toggle-slider"></span>
                 </label>
               </div>
 
               <div class="hmi-toggle-wrapper">
-                <span class="hmi-label">Creep Drive Mode</span>
+                <span class="hmi-label" id="lbl-creep-mode">Creep Drive Mode</span>
                 <label class="hmi-toggle">
-                  <input type="checkbox" checked>
+                  <input type="checkbox" checked aria-labelledby="lbl-creep-mode">
                   <span class="hmi-toggle-slider"></span>
                 </label>
               </div>
@@ -1061,7 +1061,9 @@
     const brightnessVal = document.getElementById('brightness-val');
     if (brightnessSlider && brightnessVal) {
       brightnessSlider.addEventListener('input', (e) => {
-        brightnessVal.textContent = `${e.target.value}%`;
+        const val = e.target.value;
+        brightnessVal.textContent = `${val}%`;
+        brightnessSlider.setAttribute('aria-valuenow', val);
       });
     }
 
