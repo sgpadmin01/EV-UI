@@ -1,0 +1,3 @@
+## 2026-03-30 - Dirty Checking on High-Frequency DOM Render Loops
+**Learning:** In framework-less HMI applications running continuous animation loops (rAF) and interval timers (clock, telemetry), DOM text/style mutations happen on every tick even when displayed values are identical. This causes unnecessary layout invalidations and style recalcs on low-power touch display hardware.
+**Action:** Always cache DOM element references and compare formatted string/numeric values against last-rendered state (`dirty checking`) before mutating DOM properties in high-frequency loops or interval callbacks.
