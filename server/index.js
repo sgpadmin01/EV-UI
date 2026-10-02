@@ -16,6 +16,21 @@ const app = express();
 
 connectDB();
 
+// Security Headers Middleware (Defense in Depth)
+app.use((req, res, next) => {
+  // Prevent MIME type sniffing
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  // Prevent clickjacking by restricting framing to same origin
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  // Enable browser XSS filtering
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  // Limit referrer information sent with requests
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  // Restrict sensitive browser features
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  next();
+});
+
 app.use(cors());
 app.use(express.json());
 
