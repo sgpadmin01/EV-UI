@@ -19,6 +19,16 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
+// Security headers middleware
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  res.setHeader("Referrer-Policy", "no-referrer-when-downgrade");
+  res.setHeader("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
+  next();
+});
+
 // Serve Static Client HMI Files
 app.use(express.static(path.join(__dirname, "../client/pages")));
 app.use("/css", express.static(path.join(__dirname, "../client/css")));
