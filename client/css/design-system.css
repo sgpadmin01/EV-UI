@@ -77,6 +77,13 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Accessible Focus Visible Ring for Keyboard Navigation */
+:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 3px;
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
 html, body {
   width: 1024px;
   height: 600px;
@@ -494,6 +501,12 @@ html, body {
 .hmi-toggle input:checked + .hmi-toggle-slider:before {
   transform: translateX(26px);
   background-color: #000000;
+}
+
+.hmi-toggle input:focus-visible + .hmi-toggle-slider {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 3px;
+  box-shadow: 0 0 12px var(--accent-glow);
 }
 
 /* Touch Range Slider (Smooth 28px Thumb) */
