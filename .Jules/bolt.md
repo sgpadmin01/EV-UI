@@ -1,0 +1,3 @@
+## 2026-03-30 - Dirty-Checking Cache Guards in High-Frequency DOM Animation Loops
+**Learning:** In framework-less HMI rendering targeting embedded touchscreens, running `requestAnimationFrame` for continuous gauge animations can cause redundant DOM property mutations (`textContent`, `style.width`) even when the rounded display values have not changed between frames. This causes unnecessary style calculations and DOM churn.
+**Action:** Always maintain previous state cache variables (`lastRenderedSpeed`, `lastRenderedRpm`, `lastClockStr`, etc.) and guard DOM writes with dirty checks (`if (newValue !== lastValue)`).
