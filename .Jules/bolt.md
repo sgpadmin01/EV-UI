@@ -1,0 +1,3 @@
+## 2026-03-30 - Dirty-Checking High-Frequency Telemetry DOM Operations
+**Learning:** In vanilla JS HMI applications running animation loops (`requestAnimationFrame` at 60fps) or frequent `setInterval` ticks, unconditionally writing to `.textContent`, `.style.transform`, or `.style.strokeDashoffset` forces layout/style recalculation and reflows even when values have not changed.
+**Action:** Always maintain previous value cache variables (cache guards/dirty checking) to gate DOM writes, ensuring browser style recalculation and DOM layout work are only triggered when telemetry data actually mutates.
