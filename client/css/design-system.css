@@ -408,6 +408,13 @@ html, body {
   filter: brightness(1.2);
 }
 
+.hmi-btn:focus-visible,
+.hmi-hazard-btn:focus-visible,
+.sbc-btn:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
 .hmi-btn.primary {
   background: var(--accent-primary);
   border-color: var(--accent-primary);
@@ -496,6 +503,11 @@ html, body {
   background-color: #000000;
 }
 
+.hmi-toggle input:focus-visible + .hmi-toggle-slider {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
 /* Touch Range Slider (Smooth 28px Thumb) */
 .hmi-slider-container {
   display: flex;
@@ -525,6 +537,11 @@ html, body {
   background: var(--accent-primary);
   border: 2px solid #ffffff;
   box-shadow: 0 0 10px var(--accent-primary);
+}
+
+.hmi-slider:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
 }
 
 /* Bottom HMI Navigation Bar (Fixed 64px Height) */
@@ -567,6 +584,11 @@ html, body {
 .nav-tab:active, .nav-tab.active {
   color: var(--accent-primary);
   background: rgba(0, 229, 255, 0.12);
+}
+
+.nav-tab:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: -2px;
 }
 
 .nav-tab.active {
