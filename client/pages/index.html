@@ -1046,12 +1046,18 @@
       if (activeBtn) activeBtn.classList.add('active');
     }
 
-    // Real-Time Clock
+    // Real-Time Clock with DOM cache & dirty-checking
+    const clockEl = document.getElementById('hmi-clock');
+    let lastClockText = '';
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('hmi-clock').textContent = `${h}:${m}`;
+      const clockText = `${h}:${m}`;
+      if (clockEl && clockText !== lastClockText) {
+        clockEl.textContent = clockText;
+        lastClockText = clockText;
+      }
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -1174,11 +1180,16 @@
     const effEl = document.getElementById('dash-efficiency');
     const effBarEl = document.getElementById('eff-bar-fill');
 
+    let lastOdoText = '', lastTripText = '', lastEffText = '', lastEffWidth = '';
+
     function resetTrip() {
       trip = 0.0;
       sessionDistance = 0.0;
       sessionEnergy = 0.0;
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
+      lastTripText = '0.0';
+      lastEffText = '0.0';
+      lastEffWidth = '0%';
+      if (tripEl) tripEl.textContent = '0.0';
       if (effEl) effEl.textContent = '0.0';
       if (effBarEl) effBarEl.style.width = '0%';
     }
@@ -1189,11 +1200,32 @@
       trip += dist;
       sessionDistance += dist;
       sessionEnergy += 0.0025; /* simulated continuous draw */
-      if (odometerEl) odometerEl.textContent = odometer.toFixed(1);
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
+
+      /* Optimization: Cache-guard (dirty-check) DOM updates to avoid redundant reflows/repaints */
+      const odoStr = odometer.toFixed(1);
+      if (odometerEl && odoStr !== lastOdoText) {
+        odometerEl.textContent = odoStr;
+        lastOdoText = odoStr;
+      }
+
+      const tripStr = trip.toFixed(1);
+      if (tripEl && tripStr !== lastTripText) {
+        tripEl.textContent = tripStr;
+        lastTripText = tripStr;
+      }
+
       const eff = sessionEnergy > 0 ? sessionDistance / sessionEnergy : 0;
-      if (effEl) effEl.textContent = eff.toFixed(1);
-      if (effBarEl) effBarEl.style.width = Math.min(100, (eff / 12) * 100) + '%';
+      const effStr = eff.toFixed(1);
+      if (effEl && effStr !== lastEffText) {
+        effEl.textContent = effStr;
+        lastEffText = effStr;
+      }
+
+      const effWidthStr = Math.min(100, (eff / 12) * 100) + '%';
+      if (effBarEl && effWidthStr !== lastEffWidth) {
+        effBarEl.style.width = effWidthStr;
+        lastEffWidth = effWidthStr;
+      }
     }, 1000);
   </script>
 </body>
