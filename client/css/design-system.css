@@ -572,3 +572,14 @@ html, body {
 .nav-tab.active {
   border-top: 3px solid var(--accent-primary);
 }
+
+/* Accessible Keyboard Focus Indicators */
+:focus-visible {
+  outline: 2px solid var(--accent-primary) !important;
+  outline-offset: 3px !important;
+}
+
+.hmi-toggle input:focus-visible + .hmi-toggle-slider {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 3px;
+}
