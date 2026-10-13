@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import connectDB from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
+import securityHeaders from "./middleware/securityMiddleware.js";
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ const app = express();
 
 connectDB();
 
+app.use(securityHeaders);
 app.use(cors());
 app.use(express.json());
 
