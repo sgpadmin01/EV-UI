@@ -1085,15 +1085,34 @@
 
     function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
+    /* DOM state caching to avoid redundant style reflows and text node updates during animation loop */
+    let lastAngle = null;
+    let lastOffset = null;
+    let lastSpeedText = null;
+    let lastRpmText = null;
+
     function renderGauge(speed) {
       const fraction = Math.max(0, Math.min(1, (speed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED)));
       const angle = MIN_ANGLE + fraction * (MAX_ANGLE - MIN_ANGLE);
-      if (gaugeNeedle) gaugeNeedle.style.transform = `rotate(${angle}deg)`;
+      if (gaugeNeedle && angle !== lastAngle) {
+        gaugeNeedle.style.transform = `rotate(${angle}deg)`;
+        lastAngle = angle;
+      }
       const offset = OFFSET_EMPTY - fraction * ARC_FILL_LENGTH;
-      if (gaugeArc) gaugeArc.style.strokeDashoffset = offset;
+      if (gaugeArc && offset !== lastOffset) {
+        gaugeArc.style.strokeDashoffset = offset;
+        lastOffset = offset;
+      }
       const roundedSpeed = Math.round(speed);
-      if (speedText) speedText.textContent = roundedSpeed;
-      if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      if (speedText && roundedSpeed !== lastSpeedText) {
+        speedText.textContent = roundedSpeed;
+        lastSpeedText = roundedSpeed;
+      }
+      const rpmVal = Math.round(roundedSpeed * 42);
+      if (rpmText && rpmVal !== lastRpmText) {
+        rpmText.textContent = rpmVal;
+        lastRpmText = rpmVal;
+      }
     }
 
     function updateSpeed(newSpeed, duration = 450) {
@@ -1183,17 +1202,36 @@
       if (effBarEl) effBarEl.style.width = '0%';
     }
 
+    /* State caching for telemetry DOM updates */
+    let lastOdoStr = null, lastTripStr = null, lastEffStr = null, lastBarWidthStr = null;
+
     setInterval(() => {
       const dist = currentSpeedVal / 3600; /* km per second at current speed */
       odometer += dist;
       trip += dist;
       sessionDistance += dist;
       sessionEnergy += 0.0025; /* simulated continuous draw */
-      if (odometerEl) odometerEl.textContent = odometer.toFixed(1);
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
+      const odoStr = odometer.toFixed(1);
+      if (odometerEl && odoStr !== lastOdoStr) {
+        odometerEl.textContent = odoStr;
+        lastOdoStr = odoStr;
+      }
+      const tripStr = trip.toFixed(1);
+      if (tripEl && tripStr !== lastTripStr) {
+        tripEl.textContent = tripStr;
+        lastTripStr = tripStr;
+      }
       const eff = sessionEnergy > 0 ? sessionDistance / sessionEnergy : 0;
-      if (effEl) effEl.textContent = eff.toFixed(1);
-      if (effBarEl) effBarEl.style.width = Math.min(100, (eff / 12) * 100) + '%';
+      const effStr = eff.toFixed(1);
+      if (effEl && effStr !== lastEffStr) {
+        effEl.textContent = effStr;
+        lastEffStr = effStr;
+      }
+      const barWidthStr = Math.min(100, (eff / 12) * 100) + '%';
+      if (effBarEl && barWidthStr !== lastBarWidthStr) {
+        effBarEl.style.width = barWidthStr;
+        lastBarWidthStr = barWidthStr;
+      }
     }, 1000);
   </script>
 </body>
