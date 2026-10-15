@@ -1,0 +1,5 @@
+# Palette's Journal
+
+## 2026-03-08 - Fixed-Canvas HMI Accessibility and Sensory Integration
+**Learning:** In a hardware-bound, fixed-canvas HMI display (such as an automotive/tractor touch panel), standard form accessibility patterns must be strictly enforced manually because standard browser grouping layouts do not exist. Slider and checkbox controls lack implicit label associations when structured within customized grids and wraps, requiring explicit `aria-label` attributes for screen readers. Furthermore, visual micro-interactions like screen brightness must simulate hardware behavior by modulating the entire viewport canvas wrapper, rather than just text or isolated cards, ensuring intuitive sensory feedback.
+**Action:** Always provide explicit accessibility descriptors (`aria-label`) on all range sliders, toggle checkboxes, and icon-only buttons in touch panels, and utilize full-display CSS filters (with a safe minimum bounds to prevent screen blackout) to simulate hardware integrations.
