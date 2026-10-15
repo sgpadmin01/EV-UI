@@ -543,12 +543,17 @@
       background: rgba(0, 0, 0, 0.4);
       border-top: 1px solid rgba(255, 23, 68, 0.3);
     }
+    .hmi-toast { position: absolute; bottom: 80px; left: 50%; transform: translate(-50%, 20px); background: rgba(8, 10, 15, 0.95); border: 1.5px solid var(--accent-primary); border-radius: var(--radius-sm); padding: 10px 20px; color: var(--text-primary); font-weight: 800; box-shadow: var(--shadow-accent-glow); z-index: 300; transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.25s; opacity: 0; pointer-events: none; font-family: var(--font-family-sans); text-transform: uppercase; font-size: var(--font-body); }
+    .hmi-toast.show { transform: translate(-50%, 0); opacity: 1; }
   </style>
 </head>
 <body>
 
   <!-- Fixed 1024x600 DWIN HMI Container -->
   <div class="hmi-display-container">
+
+    <!-- Toast Notification Overlay -->
+    <div id="hmi-toast" class="hmi-toast">Settings Saved</div>
 
     <!-- Welcome / Splash Screen -->
     <div class="hmi-splash" id="hmi-splash">
@@ -773,7 +778,7 @@
             
             <!-- TOUCH SCROLLABLE CONTAINER WITH HIDDEN SCROLLBAR -->
             <div class="fault-table-wrapper touch-scroll-y">
-              <table class="fault-table">
+              <table class="fault-table" id="fault-table-el">
                 <thead>
                   <tr>
                     <th>Code</th>
@@ -784,35 +789,35 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
+                  <tr data-status="ACTIVE">
                     <td>DTC-1024</td>
                     <td>Thermal Control</td>
                     <td>Battery Coolant Pressure Normal</td>
                     <td><span class="status-pill success">INFO</span></td>
                     <td>ACTIVE</td>
                   </tr>
-                  <tr>
+                  <tr data-status="PENDING">
                     <td>DTC-0842</td>
                     <td>Tire System</td>
                     <td>Rear Left Tire Pressure Low (1.8 Bar)</td>
                     <td><span class="status-pill danger pulse-alert">CRITICAL</span></td>
                     <td>PENDING</td>
                   </tr>
-                  <tr>
+                  <tr data-status="CLEARED">
                     <td>DTC-0112</td>
                     <td>BMS Node 2</td>
                     <td>Cell Voltage Balance Optimal</td>
                     <td><span class="status-pill success">OK</span></td>
                     <td>CLEARED</td>
                   </tr>
-                  <tr>
+                  <tr data-status="ACTIVE">
                     <td>DTC-0440</td>
                     <td>Motor Controller</td>
                     <td>Inverter Temperature Normal (42°C)</td>
                     <td><span class="status-pill success">OK</span></td>
                     <td>ACTIVE</td>
                   </tr>
-                  <tr>
+                  <tr data-status="ACTIVE">
                     <td>DTC-0915</td>
                     <td>CAN Gateway</td>
                     <td>Telemetry Bus Packet Rate 100 Hz</td>
@@ -865,7 +870,7 @@
               <div class="hmi-toggle-wrapper" style="margin-top:14px;">
                 <span class="hmi-label">Auto Screen Timeout</span>
                 <label class="hmi-toggle">
-                  <input type="checkbox" checked>
+                  <input type="checkbox" id="toggle-timeout" checked>
                   <span class="hmi-toggle-slider"></span>
                 </label>
               </div>
@@ -873,7 +878,7 @@
               <div class="hmi-toggle-wrapper">
                 <span class="hmi-label">Touch Beep Feedback</span>
                 <label class="hmi-toggle">
-                  <input type="checkbox" checked>
+                  <input type="checkbox" id="toggle-beep" checked>
                   <span class="hmi-toggle-slider"></span>
                 </label>
               </div>
@@ -883,7 +888,7 @@
               <div class="hmi-card-header">
                 <span class="hmi-label">Regenerative Braking Level</span>
               </div>
-              <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:var(--space-xs); margin-top:14px;">
+              <div id="regen-btns" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:var(--space-xs); margin-top:14px;">
                 <button class="hmi-btn" style="min-width:auto;">OFF</button>
                 <button class="hmi-btn" style="min-width:auto;">LVL 1</button>
                 <button class="hmi-btn primary" style="min-width:auto;">LVL 2</button>
@@ -893,7 +898,7 @@
               <div class="hmi-toggle-wrapper" style="margin-top:14px;">
                 <span class="hmi-label">Max Speed Limiter (40 km/h)</span>
                 <label class="hmi-toggle">
-                  <input type="checkbox">
+                  <input type="checkbox" id="toggle-speed-limiter">
                   <span class="hmi-toggle-slider"></span>
                 </label>
               </div>
@@ -901,7 +906,7 @@
               <div class="hmi-toggle-wrapper">
                 <span class="hmi-label">Creep Drive Mode</span>
                 <label class="hmi-toggle">
-                  <input type="checkbox" checked>
+                  <input type="checkbox" id="toggle-creep" checked>
                   <span class="hmi-toggle-slider"></span>
                 </label>
               </div>
@@ -1055,6 +1060,98 @@
     }
     setInterval(updateClock, 1000);
     updateClock();
+
+    // Toast helper
+    let toastTimeout = null;
+    function showToast(message) {
+      const toast = document.getElementById('hmi-toast');
+      if (toast) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2200);
+      }
+    }
+
+    // Toggle interaction handlers
+    const toggles = [
+      { id: 'toggle-timeout', name: 'Auto Screen Timeout' },
+      { id: 'toggle-beep', name: 'Touch Beep Feedback' },
+      { id: 'toggle-speed-limiter', name: 'Max Speed Limiter (40 km/h)' },
+      { id: 'toggle-creep', name: 'Creep Drive Mode' }
+    ];
+    toggles.forEach(toggle => {
+      const el = document.getElementById(toggle.id);
+      if (el) {
+        el.addEventListener('change', (e) => {
+          const state = e.target.checked ? 'ENABLED' : 'DISABLED';
+          showToast(`${toggle.name} is now ${state}`);
+        });
+      }
+    });
+
+    // Regenerative braking interaction
+    const regenBtns = document.querySelectorAll('#regen-btns .hmi-btn');
+    regenBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        regenBtns.forEach(b => b.classList.remove('primary'));
+        btn.classList.add('primary');
+        showToast(`Regen Level Set: ${btn.textContent}`);
+      });
+    });
+
+    // Clear Faults interaction
+    const btnClearFaults = document.getElementById('btn-clear-faults');
+    if (btnClearFaults) {
+      btnClearFaults.addEventListener('click', () => {
+        const rows = document.querySelectorAll('#fault-table-el tbody tr');
+        let clearedCount = 0;
+        rows.forEach(row => {
+          const status = row.getAttribute('data-status');
+          if (status === 'CLEARED' || status === 'PENDING') {
+            row.style.transition = 'opacity 0.4s';
+            row.style.opacity = '0';
+            setTimeout(() => {
+              row.remove();
+            }, 400);
+            clearedCount++;
+          }
+        });
+        if (clearedCount > 0) {
+          showToast(`Cleared ${clearedCount} non-active DTC logs`);
+        } else {
+          showToast('No clearable inactive faults found');
+        }
+      });
+    }
+
+    // Charging Screen Stop & Start Actions
+    const btnStopCharge = document.getElementById('btn-stop-charge');
+    const btnStartCharge = document.getElementById('btn-start-charge');
+    const chargeStatusPill = document.getElementById('charge-status-pill');
+    const chargingSocDisplay = document.getElementById('charging-soc-display');
+
+    if (btnStopCharge) {
+      btnStopCharge.addEventListener('click', () => {
+        if (chargeStatusPill) {
+          chargeStatusPill.className = 'status-pill danger';
+          chargeStatusPill.textContent = 'CHARGING STOPPED';
+        }
+        showToast('BMS Charging Cycle Stopped');
+      });
+    }
+
+    if (btnStartCharge) {
+      btnStartCharge.addEventListener('click', () => {
+        if (chargeStatusPill) {
+          chargeStatusPill.className = 'status-pill success';
+          chargeStatusPill.textContent = 'FAST CHARGING';
+        }
+        showToast('BMS Fast Charging Initiated');
+      });
+    }
 
     // Brightness Slider
     const brightnessSlider = document.getElementById('brightness-slider');
