@@ -4,8 +4,6 @@
    Dark Theme - Capacitive Touch Momentum Scrolling Enabled
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700;800&display=swap');
-
 :root {
   /* 1. Color Palette (High-Contrast 24-bit True Color IPS) */
   --bg-primary: #000000;
