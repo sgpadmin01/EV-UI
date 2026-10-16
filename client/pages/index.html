@@ -1174,11 +1174,20 @@
     const effEl = document.getElementById('dash-efficiency');
     const effBarEl = document.getElementById('eff-bar-fill');
 
+    /* Cache last rendered telemetry values to prevent redundant DOM mutations and style reflows */
+    let lastOdometerStr = null;
+    let lastTripStr = null;
+    let lastEffStr = null;
+    let lastEffBarWidth = null;
+
     function resetTrip() {
       trip = 0.0;
       sessionDistance = 0.0;
       sessionEnergy = 0.0;
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
+      lastTripStr = '0.0';
+      lastEffStr = '0.0';
+      lastEffBarWidth = '0%';
+      if (tripEl) tripEl.textContent = '0.0';
       if (effEl) effEl.textContent = '0.0';
       if (effBarEl) effBarEl.style.width = '0%';
     }
@@ -1189,11 +1198,32 @@
       trip += dist;
       sessionDistance += dist;
       sessionEnergy += 0.0025; /* simulated continuous draw */
-      if (odometerEl) odometerEl.textContent = odometer.toFixed(1);
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
+
+      /* Dirty check before mutating DOM to avoid expensive layout re-calculations when vehicle is stopped */
+      const odoStr = odometer.toFixed(1);
+      if (odoStr !== lastOdometerStr) {
+        lastOdometerStr = odoStr;
+        if (odometerEl) odometerEl.textContent = odoStr;
+      }
+
+      const tripStr = trip.toFixed(1);
+      if (tripStr !== lastTripStr) {
+        lastTripStr = tripStr;
+        if (tripEl) tripEl.textContent = tripStr;
+      }
+
       const eff = sessionEnergy > 0 ? sessionDistance / sessionEnergy : 0;
-      if (effEl) effEl.textContent = eff.toFixed(1);
-      if (effBarEl) effBarEl.style.width = Math.min(100, (eff / 12) * 100) + '%';
+      const effStr = eff.toFixed(1);
+      if (effStr !== lastEffStr) {
+        lastEffStr = effStr;
+        if (effEl) effEl.textContent = effStr;
+      }
+
+      const effWidth = Math.min(100, (eff / 12) * 100).toFixed(0) + '%';
+      if (effWidth !== lastEffBarWidth) {
+        lastEffBarWidth = effWidth;
+        if (effBarEl) effBarEl.style.width = effWidth;
+      }
     }, 1000);
   </script>
 </body>
