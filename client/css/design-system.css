@@ -572,3 +572,21 @@ html, body {
 .nav-tab.active {
   border-top: 3px solid var(--accent-primary);
 }
+
+/* =========================================================
+   KEYBOARD FOCUS ACCESSIBILITY (:focus-visible)
+   ========================================================= */
+:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+.hmi-toggle input:focus-visible + .hmi-toggle-slider {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+.hmi-slider:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 4px;
+}
