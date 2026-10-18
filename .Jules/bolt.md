@@ -1,0 +1,3 @@
+## 2026-03-30 - Dirty-Checking Guards for High-Frequency HMI Animation and Clock Loops
+**Learning:** In framework-less Vanilla JS HMI interfaces running on fixed-frame embedded displays, un-guarded `requestAnimationFrame` step functions (such as gauge updates) and `setInterval` ticks (such as real-time clock updates) invoke redundant DOM `textContent` mutations on every frame/tick even when displayed values remain identical.
+**Action:** Always cache DOM element references outside loop closures and apply value equality dirty-checks before writing to `textContent` or `style` properties to avoid triggering layout reflows and DOM mutations.

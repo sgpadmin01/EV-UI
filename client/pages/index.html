@@ -1047,11 +1047,18 @@
     }
 
     // Real-Time Clock
+    let lastClockStr = '';
+    const clockEl = document.getElementById('hmi-clock');
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('hmi-clock').textContent = `${h}:${m}`;
+      const clockStr = `${h}:${m}`;
+      // Performance optimization: dirty-check time string to eliminate redundant DOM text writes (59/60 ticks/min)
+      if (clockEl && clockStr !== lastClockStr) {
+        lastClockStr = clockStr;
+        clockEl.textContent = clockStr;
+      }
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -1085,6 +1092,7 @@
 
     function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
+    let lastRoundedSpeed = -1;
     function renderGauge(speed) {
       const fraction = Math.max(0, Math.min(1, (speed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED)));
       const angle = MIN_ANGLE + fraction * (MAX_ANGLE - MIN_ANGLE);
@@ -1092,8 +1100,12 @@
       const offset = OFFSET_EMPTY - fraction * ARC_FILL_LENGTH;
       if (gaugeArc) gaugeArc.style.strokeDashoffset = offset;
       const roundedSpeed = Math.round(speed);
-      if (speedText) speedText.textContent = roundedSpeed;
-      if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      // Performance optimization: dirty-check speed to eliminate redundant text node reflows on 60fps rAF
+      if (roundedSpeed !== lastRoundedSpeed) {
+        lastRoundedSpeed = roundedSpeed;
+        if (speedText) speedText.textContent = roundedSpeed;
+        if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      }
     }
 
     function updateSpeed(newSpeed, duration = 450) {
