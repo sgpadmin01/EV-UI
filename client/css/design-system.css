@@ -379,6 +379,22 @@ html, body {
   box-shadow: 0 0 10px var(--accent-glow);
 }
 
+/* Focus Visible Accessibility Styles */
+.hmi-btn:focus-visible,
+.sbc-btn:focus-visible,
+.nav-tab:focus-visible,
+.hmi-slider:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.hmi-toggle input:focus-visible + .hmi-toggle-slider {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
 /* Touch Buttons (Min height 48px, Touch Action Manipulation) */
 .hmi-btn {
   min-height: var(--touch-target-min);
