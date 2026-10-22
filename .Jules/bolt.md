@@ -1,0 +1,3 @@
+## 2025-05-18 - DOM Dirty-Checking in Animation Loops
+**Learning:** High-frequency DOM updates in `requestAnimationFrame` or short `setInterval` callbacks cause redundant style calculations and layout reflows even when values don't change visually.
+**Action:** Always maintain local state variables outside callbacks to dirty-check values before writing to `.textContent`, `.style.transform`, or `.style.strokeDashoffset`.
