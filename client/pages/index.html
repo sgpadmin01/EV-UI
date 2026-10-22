@@ -1046,12 +1046,18 @@
       if (activeBtn) activeBtn.classList.add('active');
     }
 
-    // Real-Time Clock
+    // Real-Time Clock with DOM element caching & dirty-checking
+    const clockEl = document.getElementById('hmi-clock');
+    let lastClockText = '';
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('hmi-clock').textContent = `${h}:${m}`;
+      const timeStr = `${h}:${m}`;
+      if (timeStr !== lastClockText) {
+        lastClockText = timeStr;
+        if (clockEl) clockEl.textContent = timeStr;
+      }
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -1082,18 +1088,36 @@
     const rpmText = document.getElementById('dash-rpm');
 
     let currentSpeedVal = 0; let targetSpeedVal = 0; let animationFrameId = null; let animStartTime = null; let animStartSpeed = 0;
+    // Dirty-checking cache state for high-frequency animation loop
+    let lastAngle = null;
+    let lastOffset = null;
+    let lastSpeedVal = null;
+    let lastRpmVal = null;
 
     function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
     function renderGauge(speed) {
       const fraction = Math.max(0, Math.min(1, (speed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED)));
       const angle = MIN_ANGLE + fraction * (MAX_ANGLE - MIN_ANGLE);
-      if (gaugeNeedle) gaugeNeedle.style.transform = `rotate(${angle}deg)`;
+      if (angle !== lastAngle) {
+        lastAngle = angle;
+        if (gaugeNeedle) gaugeNeedle.style.transform = `rotate(${angle}deg)`;
+      }
       const offset = OFFSET_EMPTY - fraction * ARC_FILL_LENGTH;
-      if (gaugeArc) gaugeArc.style.strokeDashoffset = offset;
+      if (offset !== lastOffset) {
+        lastOffset = offset;
+        if (gaugeArc) gaugeArc.style.strokeDashoffset = offset;
+      }
       const roundedSpeed = Math.round(speed);
-      if (speedText) speedText.textContent = roundedSpeed;
-      if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      if (roundedSpeed !== lastSpeedVal) {
+        lastSpeedVal = roundedSpeed;
+        if (speedText) speedText.textContent = roundedSpeed;
+      }
+      const roundedRpm = Math.round(roundedSpeed * 42);
+      if (roundedRpm !== lastRpmVal) {
+        lastRpmVal = roundedRpm;
+        if (rpmText) rpmText.textContent = roundedRpm;
+      }
     }
 
     function updateSpeed(newSpeed, duration = 450) {
@@ -1174,13 +1198,28 @@
     const effEl = document.getElementById('dash-efficiency');
     const effBarEl = document.getElementById('eff-bar-fill');
 
+    let lastOdoStr = '';
+    let lastTripStr = '';
+    let lastEffStr = '';
+    let lastEffWidthStr = '';
+
     function resetTrip() {
       trip = 0.0;
       sessionDistance = 0.0;
       sessionEnergy = 0.0;
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
-      if (effEl) effEl.textContent = '0.0';
-      if (effBarEl) effBarEl.style.width = '0%';
+      const tripStr = trip.toFixed(1);
+      if (tripStr !== lastTripStr) {
+        lastTripStr = tripStr;
+        if (tripEl) tripEl.textContent = tripStr;
+      }
+      if ('0.0' !== lastEffStr) {
+        lastEffStr = '0.0';
+        if (effEl) effEl.textContent = '0.0';
+      }
+      if ('0%' !== lastEffWidthStr) {
+        lastEffWidthStr = '0%';
+        if (effBarEl) effBarEl.style.width = '0%';
+      }
     }
 
     setInterval(() => {
@@ -1189,11 +1228,31 @@
       trip += dist;
       sessionDistance += dist;
       sessionEnergy += 0.0025; /* simulated continuous draw */
-      if (odometerEl) odometerEl.textContent = odometer.toFixed(1);
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
+
+      const odoStr = odometer.toFixed(1);
+      if (odoStr !== lastOdoStr) {
+        lastOdoStr = odoStr;
+        if (odometerEl) odometerEl.textContent = odoStr;
+      }
+
+      const tripStr = trip.toFixed(1);
+      if (tripStr !== lastTripStr) {
+        lastTripStr = tripStr;
+        if (tripEl) tripEl.textContent = tripStr;
+      }
+
       const eff = sessionEnergy > 0 ? sessionDistance / sessionEnergy : 0;
-      if (effEl) effEl.textContent = eff.toFixed(1);
-      if (effBarEl) effBarEl.style.width = Math.min(100, (eff / 12) * 100) + '%';
+      const effStr = eff.toFixed(1);
+      if (effStr !== lastEffStr) {
+        lastEffStr = effStr;
+        if (effEl) effEl.textContent = effStr;
+      }
+
+      const effWidthStr = Math.min(100, (eff / 12) * 100) + '%';
+      if (effWidthStr !== lastEffWidthStr) {
+        lastEffWidthStr = effWidthStr;
+        if (effBarEl) effBarEl.style.width = effWidthStr;
+      }
     }, 1000);
   </script>
 </body>
