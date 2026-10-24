@@ -854,26 +854,26 @@
           <div class="settings-grid">
             <div class="hmi-card">
               <div class="hmi-card-header">
-                <span class="hmi-label">Display Brightness</span>
+                <span class="hmi-label" id="lbl-brightness">Display Brightness</span>
                 <span class="hmi-value" style="font-size:20px;" id="brightness-val">80%</span>
               </div>
               <div class="hmi-slider-container" style="margin-top:14px;">
                 <i data-lucide="sun" style="width:22px; height:22px; color:var(--text-secondary);"></i>
-                <input type="range" class="hmi-slider" min="10" max="100" value="80" id="brightness-slider">
+                <input type="range" class="hmi-slider" min="10" max="100" value="80" id="brightness-slider" aria-label="Display Brightness">
               </div>
 
               <div class="hmi-toggle-wrapper" style="margin-top:14px;">
-                <span class="hmi-label">Auto Screen Timeout</span>
+                <span class="hmi-label" id="lbl-timeout">Auto Screen Timeout</span>
                 <label class="hmi-toggle">
-                  <input type="checkbox" checked>
+                  <input type="checkbox" checked aria-labelledby="lbl-timeout">
                   <span class="hmi-toggle-slider"></span>
                 </label>
               </div>
 
               <div class="hmi-toggle-wrapper">
-                <span class="hmi-label">Touch Beep Feedback</span>
+                <span class="hmi-label" id="lbl-beep">Touch Beep Feedback</span>
                 <label class="hmi-toggle">
-                  <input type="checkbox" checked>
+                  <input type="checkbox" checked aria-labelledby="lbl-beep">
                   <span class="hmi-toggle-slider"></span>
                 </label>
               </div>
@@ -891,17 +891,17 @@
               </div>
 
               <div class="hmi-toggle-wrapper" style="margin-top:14px;">
-                <span class="hmi-label">Max Speed Limiter (40 km/h)</span>
+                <span class="hmi-label" id="lbl-speed-limiter">Max Speed Limiter (40 km/h)</span>
                 <label class="hmi-toggle">
-                  <input type="checkbox">
+                  <input type="checkbox" aria-labelledby="lbl-speed-limiter">
                   <span class="hmi-toggle-slider"></span>
                 </label>
               </div>
 
               <div class="hmi-toggle-wrapper">
-                <span class="hmi-label">Creep Drive Mode</span>
+                <span class="hmi-label" id="lbl-creep">Creep Drive Mode</span>
                 <label class="hmi-toggle">
-                  <input type="checkbox" checked>
+                  <input type="checkbox" checked aria-labelledby="lbl-creep">
                   <span class="hmi-toggle-slider"></span>
                 </label>
               </div>
