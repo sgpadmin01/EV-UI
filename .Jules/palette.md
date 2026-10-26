@@ -1,0 +1,3 @@
+## 2026-10-26 - Accessible Keyboard Focus & Screen Reader Controls in Custom HMI Systems
+**Learning:** Custom UI controls (like sliders, toggle switches, and icon-only SVG buttons) in embedded/framework-less HMI interfaces often lack accessible outline indicators and screen reader label bindings by default. CSS `:focus-visible` must be targeted directly onto interactive elements or their styled proxy components (`.hmi-toggle input:focus-visible + .hmi-toggle-slider`) using native keyboard navigation to render outlines correctly.
+**Action:** Always map `:focus-visible` styles using theme accent variables for custom controls and associate form inputs with visible labels via `aria-labelledby` or `aria-label`.
