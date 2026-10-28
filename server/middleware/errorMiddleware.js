@@ -9,7 +9,8 @@ const errorHandler = (err, req, res, next) => {
   res.status(statusCode);
   res.json({
     message: err.message,
-    stack: process.env.NODE_ENV === "production" ? null : err.stack,
+    // Security: Only expose stack trace in explicit development environment to fail securely and prevent information leakage
+    stack: process.env.NODE_ENV === "development" ? err.stack : null,
   });
 };
 
