@@ -571,7 +571,7 @@
         </div>
       </div>
       <div class="hmi-header-right">
-        <button class="hmi-hazard-btn" id="hazard-btn" onclick="toggleHazard(true)">
+        <button class="hmi-hazard-btn" id="hazard-btn" onclick="toggleHazard(true)" aria-label="Open Hazard and Warning Overlay">
           <i data-lucide="shield-alert" style="width:16px; height:16px;"></i> Hazard
         </button>
         <div class="hmi-header-clock" id="hmi-clock">14:30</div>
@@ -606,7 +606,7 @@
                 <span class="hmi-label">Trip Meter</span>
               </div>
               <div class="dash-value"><span id="dash-trip">0.0</span><span class="hmi-unit">km</span></div>
-              <button class="hmi-btn dash-trip-btn" onclick="resetTrip()">
+              <button class="hmi-btn dash-trip-btn" onclick="resetTrip()" aria-label="Reset Trip Meter">
                 <i data-lucide="rotate-ccw" style="width:14px; height:14px;"></i> Reset
               </button>
             </div>
@@ -718,8 +718,8 @@
             </div>
 
             <div style="display:flex; justify-content:space-between; gap:var(--space-md);">
-              <button class="hmi-btn danger" id="btn-stop-charge" style="flex:1;"><i data-lucide="square" style="width:18px; height:18px;"></i> Stop</button>
-              <button class="hmi-btn success" id="btn-start-charge" style="flex:1;"><i data-lucide="play" style="width:18px; height:18px;"></i> Fast Charge</button>
+              <button class="hmi-btn danger" id="btn-stop-charge" style="flex:1;" aria-label="Stop Charging"><i data-lucide="square" style="width:18px; height:18px;"></i> Stop</button>
+              <button class="hmi-btn success" id="btn-start-charge" style="flex:1;" aria-label="Start Fast Charging"><i data-lucide="play" style="width:18px; height:18px;"></i> Fast Charge</button>
             </div>
           </div>
 
@@ -768,7 +768,7 @@
           <div class="hmi-card" style="flex:1; padding: 6px 12px;">
             <div class="hmi-card-header" style="margin-bottom:8px;">
               <span class="hmi-label">Active System DTCs</span>
-              <button class="hmi-btn" id="btn-clear-faults"><i data-lucide="rotate-ccw" style="width:18px; height:18px;"></i> Clear Faults</button>
+              <button class="hmi-btn" id="btn-clear-faults" aria-label="Clear active diagnostic trouble codes"><i data-lucide="rotate-ccw" style="width:18px; height:18px;"></i> Clear Faults</button>
             </div>
             
             <!-- TOUCH SCROLLABLE CONTAINER WITH HIDDEN SCROLLBAR -->
@@ -859,21 +859,21 @@
               </div>
               <div class="hmi-slider-container" style="margin-top:14px;">
                 <i data-lucide="sun" style="width:22px; height:22px; color:var(--text-secondary);"></i>
-                <input type="range" class="hmi-slider" min="10" max="100" value="80" id="brightness-slider">
+                <input type="range" class="hmi-slider" min="10" max="100" value="80" id="brightness-slider" aria-label="Display Brightness">
               </div>
 
               <div class="hmi-toggle-wrapper" style="margin-top:14px;">
-                <span class="hmi-label">Auto Screen Timeout</span>
+                <span class="hmi-label" id="lbl-auto-timeout">Auto Screen Timeout</span>
                 <label class="hmi-toggle">
-                  <input type="checkbox" checked>
+                  <input type="checkbox" checked aria-labelledby="lbl-auto-timeout">
                   <span class="hmi-toggle-slider"></span>
                 </label>
               </div>
 
               <div class="hmi-toggle-wrapper">
-                <span class="hmi-label">Touch Beep Feedback</span>
+                <span class="hmi-label" id="lbl-touch-beep">Touch Beep Feedback</span>
                 <label class="hmi-toggle">
-                  <input type="checkbox" checked>
+                  <input type="checkbox" checked aria-labelledby="lbl-touch-beep">
                   <span class="hmi-toggle-slider"></span>
                 </label>
               </div>
@@ -884,24 +884,24 @@
                 <span class="hmi-label">Regenerative Braking Level</span>
               </div>
               <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:var(--space-xs); margin-top:14px;">
-                <button class="hmi-btn" style="min-width:auto;">OFF</button>
-                <button class="hmi-btn" style="min-width:auto;">LVL 1</button>
-                <button class="hmi-btn primary" style="min-width:auto;">LVL 2</button>
-                <button class="hmi-btn" style="min-width:auto;">LVL 3</button>
+                <button class="hmi-btn" style="min-width:auto;" aria-label="Set Regenerative Braking Level to Off">OFF</button>
+                <button class="hmi-btn" style="min-width:auto;" aria-label="Set Regenerative Braking Level to Level 1">LVL 1</button>
+                <button class="hmi-btn primary" style="min-width:auto;" aria-label="Set Regenerative Braking Level to Level 2">LVL 2</button>
+                <button class="hmi-btn" style="min-width:auto;" aria-label="Set Regenerative Braking Level to Level 3">LVL 3</button>
               </div>
 
               <div class="hmi-toggle-wrapper" style="margin-top:14px;">
-                <span class="hmi-label">Max Speed Limiter (40 km/h)</span>
+                <span class="hmi-label" id="lbl-speed-limiter">Max Speed Limiter (40 km/h)</span>
                 <label class="hmi-toggle">
-                  <input type="checkbox">
+                  <input type="checkbox" aria-labelledby="lbl-speed-limiter">
                   <span class="hmi-toggle-slider"></span>
                 </label>
               </div>
 
               <div class="hmi-toggle-wrapper">
-                <span class="hmi-label">Creep Drive Mode</span>
+                <span class="hmi-label" id="lbl-creep-mode">Creep Drive Mode</span>
                 <label class="hmi-toggle">
-                  <input type="checkbox" checked>
+                  <input type="checkbox" checked aria-labelledby="lbl-creep-mode">
                   <span class="hmi-toggle-slider"></span>
                 </label>
               </div>
@@ -947,28 +947,28 @@
     </main>
 
     <!-- Bottom Navigation Bar -->
-    <nav class="hmi-navbar">
-      <button class="nav-tab active" onclick="switchTab('dashboard')">
+    <nav class="hmi-navbar" aria-label="Main Navigation">
+      <button class="nav-tab active" onclick="switchTab('dashboard')" aria-label="Dashboard tab">
         <i data-lucide="layout-dashboard"></i>
         <span class="nav-tab-label">Dashboard</span>
       </button>
-      <button class="nav-tab" onclick="switchTab('charging')">
+      <button class="nav-tab" onclick="switchTab('charging')" aria-label="Charging tab">
         <i data-lucide="battery-charging"></i>
         <span class="nav-tab-label">Charging</span>
       </button>
-      <button class="nav-tab" onclick="switchTab('faults')">
+      <button class="nav-tab" onclick="switchTab('faults')" aria-label="Faults tab">
         <i data-lucide="shield-alert"></i>
         <span class="nav-tab-label">Faults</span>
       </button>
-      <button class="nav-tab" onclick="switchTab('settings')">
+      <button class="nav-tab" onclick="switchTab('settings')" aria-label="Settings tab">
         <i data-lucide="sliders"></i>
         <span class="nav-tab-label">Settings</span>
       </button>
-      <button class="nav-tab" onclick="switchTab('info')">
+      <button class="nav-tab" onclick="switchTab('info')" aria-label="Info tab">
         <i data-lucide="info"></i>
         <span class="nav-tab-label">Info</span>
       </button>
-      <button class="nav-tab" onclick="window.location.href='navigation.html'">
+      <button class="nav-tab" onclick="window.location.href='navigation.html'" aria-label="SBC Navigation page">
         <i data-lucide="navigation"></i>
         <span class="nav-tab-label">Nav</span>
       </button>
@@ -1002,7 +1002,7 @@
         </div>
       </div>
       <div class="hazard-footer">
-        <button class="hmi-btn danger" onclick="toggleHazard(false)">
+        <button class="hmi-btn danger" onclick="toggleHazard(false)" aria-label="Dismiss Hazard Overlay and Return to Dashboard">
           <i data-lucide="arrow-left" style="width:16px; height:16px;"></i> Return to Dashboard
         </button>
       </div>
