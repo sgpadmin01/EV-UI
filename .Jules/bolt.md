@@ -1,0 +1,3 @@
+## 2026-03-30 - Dirty-checking cache guards in framework-less HMI loops
+**Learning:** In framework-less JavaScript HMI displays, high-frequency animation loops (like 60 FPS `requestAnimationFrame` speedometer renderers) and periodic timer callbacks (`setInterval` clock/telemetry updates) frequently mutate DOM properties (`textContent`, `style.width`) even when the rounded values haven't changed between ticks.
+**Action:** Always maintain previous value tracking variables for text and style properties in high-frequency loops, skipping DOM mutation when current === previous to eliminate redundant browser layout invalidations and string reallocations.
