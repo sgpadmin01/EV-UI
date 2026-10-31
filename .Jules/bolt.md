@@ -1,0 +1,3 @@
+## 2026-10-31 - Dirty-checking High-Frequency DOM Operations in HMI Displays
+**Learning:** In framework-less embedded HMI interfaces running continuous `requestAnimationFrame` animation loops (e.g. gauge needle physics) or periodic timers (`setInterval` clock updates), assigning to `node.textContent` without dirty-checking executes redundant layout recalculation and DOM tree invalidations even when the formatted integer or string has not changed between frames.
+**Action:** Always maintain a memoized cache variable of the previous displayed value in high-frequency render functions and guard DOM mutations with equality dirty-checking (`if (val !== lastVal)`).
