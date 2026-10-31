@@ -400,6 +400,12 @@ html, body {
   transition: transform 0.1s ease, filter 0.1s ease;
 }
 
+.hmi-btn:focus-visible, .hmi-hazard-btn:focus-visible, .sbc-btn:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 12px var(--accent-primary);
+}
+
 .hmi-btn:active {
   background: var(--accent-primary);
   border-color: var(--accent-primary);
@@ -496,6 +502,12 @@ html, body {
   background-color: #000000;
 }
 
+.hmi-toggle input:focus-visible + .hmi-toggle-slider {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 3px;
+  box-shadow: 0 0 12px var(--accent-primary);
+}
+
 /* Touch Range Slider (Smooth 28px Thumb) */
 .hmi-slider-container {
   display: flex;
@@ -514,6 +526,11 @@ html, body {
   background: #242c38;
   outline: none;
   border: 1px solid var(--border-color);
+}
+
+.hmi-slider:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 3px;
 }
 
 .hmi-slider::-webkit-slider-thumb {
@@ -571,4 +588,9 @@ html, body {
 
 .nav-tab.active {
   border-top: 3px solid var(--accent-primary);
+}
+
+.nav-tab:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: -2px;
 }
