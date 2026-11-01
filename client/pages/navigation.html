@@ -248,6 +248,11 @@
       justify-content: center;
       cursor: pointer;
     }
+    .sbc-btn:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
     .sbc-btn:active { background: var(--accent-primary); color: #000000; }
   </style>
 </head>
@@ -359,8 +364,8 @@
         Search destination, field, farm…
       </div>
       <div class="sbc-zoom">
-        <button class="sbc-btn" onclick="mapZoom(-1)"><i data-lucide="minus" style="width:20px; height:20px;"></i></button>
-        <button class="sbc-btn" onclick="mapZoom(1)"><i data-lucide="plus" style="width:20px; height:20px;"></i></button>
+        <button class="sbc-btn" onclick="mapZoom(-1)" aria-label="Zoom out" title="Zoom out"><i data-lucide="minus" style="width:20px; height:20px;"></i></button>
+        <button class="sbc-btn" onclick="mapZoom(1)" aria-label="Zoom in" title="Zoom in"><i data-lucide="plus" style="width:20px; height:20px;"></i></button>
       </div>
     </div>
 
