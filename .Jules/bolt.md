@@ -1,0 +1,3 @@
+## 2026-11-01 - Dirty-Checking on High-Frequency Animation Loops in Vanilla HMI
+**Learning:** In framework-less embedded web HMIs using 60fps `requestAnimationFrame` for easing animations or `setInterval` for telemetry/clock updates, updating element `textContent` on every frame triggers layout recomputation and DOM mutation overhead even when the integer value has not changed. Easing curves stay at rounded values across multiple consecutive frames.
+**Action:** Always maintain cache state variables (e.g. `lastSpeedText`, `lastRpmText`, `lastClockText`) and guard DOM mutations with equality checks before assigning `textContent`.
