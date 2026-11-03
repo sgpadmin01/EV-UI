@@ -16,6 +16,18 @@ const app = express();
 
 connectDB();
 
+// Security: Disable X-Powered-By to prevent server technology fingerprinting
+app.disable("x-powered-by");
+
+// Security: Set defense-in-depth HTTP security headers
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Permissions-Policy", "geolocation=(), camera=(), microphone=()");
+  next();
+});
+
 app.use(cors());
 app.use(express.json());
 
