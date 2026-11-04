@@ -1,0 +1,4 @@
+## 2026-10-21 - Fail Secure Error Handling for Stack Traces
+**Vulnerability:** The error-handling middleware (`server/middleware/errorMiddleware.js`) previously leaked stack traces when `NODE_ENV` was unset, `staging`, or `test`, because it only checked `process.env.NODE_ENV === "production" ? null : err.stack`. In environments where `NODE_ENV` was not explicitly set to production, API errors leaked server file system paths and stack traces to clients.
+**Learning:** Checking for `=== "production"` to suppress sensitive debug information is an anti-pattern. An opt-out model fails insecurely by default when configurations or environment variables are missing.
+**Prevention:** Always follow fail-secure principles by opt-in behavior: only enable sensitive features or debug output when `NODE_ENV === "development"`. In all other cases (default/unset, staging, production), withhold sensitive diagnostics.
