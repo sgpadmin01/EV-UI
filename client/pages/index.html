@@ -1046,12 +1046,19 @@
       if (activeBtn) activeBtn.classList.add('active');
     }
 
-    // Real-Time Clock
+    // Real-Time Clock with cached element and dirty-checking guard
+    const hmiClockEl = document.getElementById('hmi-clock');
+    let lastClockStr = null;
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('hmi-clock').textContent = `${h}:${m}`;
+      const timeStr = `${h}:${m}`;
+      // Performance optimization: Avoid redundant DOM text mutation every second when time is unchanged
+      if (hmiClockEl && timeStr !== lastClockStr) {
+        lastClockStr = timeStr;
+        hmiClockEl.textContent = timeStr;
+      }
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -1082,18 +1089,36 @@
     const rpmText = document.getElementById('dash-rpm');
 
     let currentSpeedVal = 0; let targetSpeedVal = 0; let animationFrameId = null; let animStartTime = null; let animStartSpeed = 0;
+    // Bolt: Cache previous animation frame values to guard against redundant DOM & style writes (prevents reflows at 60fps)
+    let lastRenderedSpeed = null;
+    let lastRenderedRpm = null;
+    let lastNeedleAngle = null;
+    let lastArcOffset = null;
 
     function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
     function renderGauge(speed) {
       const fraction = Math.max(0, Math.min(1, (speed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED)));
       const angle = MIN_ANGLE + fraction * (MAX_ANGLE - MIN_ANGLE);
-      if (gaugeNeedle) gaugeNeedle.style.transform = `rotate(${angle}deg)`;
+      if (gaugeNeedle && (lastNeedleAngle === null || Math.abs(angle - lastNeedleAngle) >= 0.05)) {
+        gaugeNeedle.style.transform = `rotate(${angle}deg)`;
+        lastNeedleAngle = angle;
+      }
       const offset = OFFSET_EMPTY - fraction * ARC_FILL_LENGTH;
-      if (gaugeArc) gaugeArc.style.strokeDashoffset = offset;
+      if (gaugeArc && (lastArcOffset === null || Math.abs(offset - lastArcOffset) >= 0.1)) {
+        gaugeArc.style.strokeDashoffset = offset;
+        lastArcOffset = offset;
+      }
       const roundedSpeed = Math.round(speed);
-      if (speedText) speedText.textContent = roundedSpeed;
-      if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      if (speedText && roundedSpeed !== lastRenderedSpeed) {
+        speedText.textContent = roundedSpeed;
+        lastRenderedSpeed = roundedSpeed;
+      }
+      const roundedRpm = Math.round(roundedSpeed * 42);
+      if (rpmText && roundedRpm !== lastRenderedRpm) {
+        rpmText.textContent = roundedRpm;
+        lastRenderedRpm = roundedRpm;
+      }
     }
 
     function updateSpeed(newSpeed, duration = 450) {

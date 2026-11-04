@@ -1,0 +1,3 @@
+## 2026-11-04 - High-Frequency Animation DOM Dirty-Checking Guards
+**Learning:** In framework-less vanilla JavaScript HMI interfaces with requestAnimationFrame loops (such as gauge needles and continuous speed interpolation), mutating DOM `.textContent` and inline style strings on every animation frame triggers unnecessary text node invalidations, style recalculations, and layout reflows even when integer values or sub-pixel angles have not measurably changed.
+**Action:** Always maintain previous frame state cache variables (e.g. `lastRenderedSpeed`, `lastNeedleAngle`) and gate DOM / style writes behind dirty-checking thresholds (e.g. integer change for display text, >0.05deg threshold for rotational transforms) to preserve 60fps responsiveness on embedded hardware.
