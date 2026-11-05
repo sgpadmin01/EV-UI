@@ -1,0 +1,4 @@
+## 2026-11-05 - Bounded Navigation Controls with Accessible States
+
+**Learning:** Icon-only navigation buttons (such as map zoom in/out controls) in dark-themed embedded automotive touchscreens lack clear interaction affordances when boundaries are reached, resulting in silent failures if users click while at min/max limits. Furthermore, without explicit `:focus-visible` styling matching the high-contrast design system and semantic `aria-label` / `role="group"` attributes, keyboard users and assistive tech cannot identify button purpose or disabled state.
+**Action:** Always provide explicit `aria-label` attributes on icon-only controls, group related action pairs with `role="group"`, style high-contrast `:focus-visible` outlines using existing theme accents (`var(--accent-primary)`), and reflect boundary limits dynamically via the native `disabled` attribute and `:disabled` visual styling.
