@@ -247,8 +247,20 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      touch-action: manipulation;
+      transition: background-color 0.15s ease, opacity 0.15s ease, border-color 0.15s ease;
     }
-    .sbc-btn:active { background: var(--accent-primary); color: #000000; }
+    .sbc-btn:active:not(:disabled) { background: var(--accent-primary); color: #000000; }
+    .sbc-btn:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+    .sbc-btn:disabled {
+      opacity: 0.38;
+      cursor: not-allowed;
+      border-color: rgba(255, 255, 255, 0.05);
+    }
   </style>
 </head>
 <body>
@@ -358,9 +370,9 @@
         <i data-lucide="search" style="width:20px; height:20px; color:var(--accent-primary);"></i>
         Search destination, field, farm…
       </div>
-      <div class="sbc-zoom">
-        <button class="sbc-btn" onclick="mapZoom(-1)"><i data-lucide="minus" style="width:20px; height:20px;"></i></button>
-        <button class="sbc-btn" onclick="mapZoom(1)"><i data-lucide="plus" style="width:20px; height:20px;"></i></button>
+      <div class="sbc-zoom" role="group" aria-label="Map zoom controls">
+        <button class="sbc-btn" id="btn-zoom-out" onclick="mapZoom(-1)" aria-label="Zoom out map" disabled><i data-lucide="minus" style="width:20px; height:20px;"></i></button>
+        <button class="sbc-btn" id="btn-zoom-in" onclick="mapZoom(1)" aria-label="Zoom in map"><i data-lucide="plus" style="width:20px; height:20px;"></i></button>
       </div>
     </div>
 
@@ -380,12 +392,16 @@
 
     /* Demo zoom: scale the SVG layer (touch-friendly +/- buttons) */
     const mapSvg = document.querySelector('.map-svg');
+    const btnZoomOut = document.getElementById('btn-zoom-out');
+    const btnZoomIn = document.getElementById('btn-zoom-in');
     let zoom = 1;
     function mapZoom(dir) {
-      zoom = Math.min(2.5, Math.max(1, zoom + dir * 0.25));
+      zoom = Math.round(Math.min(2.5, Math.max(1, zoom + dir * 0.25)) * 100) / 100;
       mapSvg.style.transform = `scale(${zoom})`;
       mapSvg.style.transformOrigin = 'center';
       mapSvg.style.transition = 'transform 0.2s ease';
+      if (btnZoomOut) btnZoomOut.disabled = zoom <= 1;
+      if (btnZoomIn) btnZoomIn.disabled = zoom >= 2.5;
     }
 
     /* Live speed demo on the nav readout */
