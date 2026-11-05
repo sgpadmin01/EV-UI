@@ -1,0 +1,3 @@
+## 2026-11-05 - Dirty-checking DOM mutations in high-frequency animation and interval loops
+**Learning:** In framework-less embedded HMI dashboards, continuous `requestAnimationFrame` loops and short `setInterval` callbacks can trigger hundreds of redundant DOM textContent and attribute assignments even when rounded values have not changed. Caching previous primitive values prevents unnecessary DOM dirtying and style recalculations on low-power automotive display hardware.
+**Action:** Always add primitive value guards before writing to DOM elements in high-frequency animation and telemetry loops.
