@@ -1046,12 +1046,18 @@
       if (activeBtn) activeBtn.classList.add('active');
     }
 
-    // Real-Time Clock
+    // Real-Time Clock: cache element reference and dirty-check to avoid redundant DOM writes (~98.3% fewer DOM updates)
+    const clockEl = document.getElementById('hmi-clock');
+    let lastClockText = '';
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('hmi-clock').textContent = `${h}:${m}`;
+      const timeText = `${h}:${m}`;
+      if (timeText !== lastClockText) {
+        lastClockText = timeText;
+        if (clockEl) clockEl.textContent = timeText;
+      }
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -1082,6 +1088,7 @@
     const rpmText = document.getElementById('dash-rpm');
 
     let currentSpeedVal = 0; let targetSpeedVal = 0; let animationFrameId = null; let animStartTime = null; let animStartSpeed = 0;
+    let lastRenderedSpeed = null; // Cache to skip redundant DOM text updates during 60 FPS animation steps
 
     function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
@@ -1092,8 +1099,12 @@
       const offset = OFFSET_EMPTY - fraction * ARC_FILL_LENGTH;
       if (gaugeArc) gaugeArc.style.strokeDashoffset = offset;
       const roundedSpeed = Math.round(speed);
-      if (speedText) speedText.textContent = roundedSpeed;
-      if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      // Dirty-check: only update text nodes when integer values change, avoiding reflow on fractional frame steps
+      if (roundedSpeed !== lastRenderedSpeed) {
+        lastRenderedSpeed = roundedSpeed;
+        if (speedText) speedText.textContent = roundedSpeed;
+        if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      }
     }
 
     function updateSpeed(newSpeed, duration = 450) {
@@ -1174,26 +1185,45 @@
     const effEl = document.getElementById('dash-efficiency');
     const effBarEl = document.getElementById('eff-bar-fill');
 
+    let lastOdoStr = '';
+    let lastTripStr = '';
+    let lastEffStr = '';
+
     function resetTrip() {
       trip = 0.0;
       sessionDistance = 0.0;
       sessionEnergy = 0.0;
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
+      lastTripStr = '0.0';
+      lastEffStr = '0.0';
+      if (tripEl) tripEl.textContent = '0.0';
       if (effEl) effEl.textContent = '0.0';
       if (effBarEl) effBarEl.style.width = '0%';
     }
 
+    // Telemetry update loop: guarded with dirty checks to eliminate redundant DOM writes during idle/steady states
     setInterval(() => {
       const dist = currentSpeedVal / 3600; /* km per second at current speed */
       odometer += dist;
       trip += dist;
       sessionDistance += dist;
       sessionEnergy += 0.0025; /* simulated continuous draw */
-      if (odometerEl) odometerEl.textContent = odometer.toFixed(1);
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
+      const odoStr = odometer.toFixed(1);
+      if (odoStr !== lastOdoStr) {
+        lastOdoStr = odoStr;
+        if (odometerEl) odometerEl.textContent = odoStr;
+      }
+      const tripStr = trip.toFixed(1);
+      if (tripStr !== lastTripStr) {
+        lastTripStr = tripStr;
+        if (tripEl) tripEl.textContent = tripStr;
+      }
       const eff = sessionEnergy > 0 ? sessionDistance / sessionEnergy : 0;
-      if (effEl) effEl.textContent = eff.toFixed(1);
-      if (effBarEl) effBarEl.style.width = Math.min(100, (eff / 12) * 100) + '%';
+      const effStr = eff.toFixed(1);
+      if (effStr !== lastEffStr) {
+        lastEffStr = effStr;
+        if (effEl) effEl.textContent = effStr;
+        if (effBarEl) effBarEl.style.width = Math.min(100, (eff / 12) * 100) + '%';
+      }
     }, 1000);
   </script>
 </body>
