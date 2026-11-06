@@ -1,0 +1,4 @@
+## 2026-10-21 - Fail-Secure Stack Trace Exposure in Express Error Handling
+**Vulnerability:** The error handler middleware only suppressed stack traces when `NODE_ENV === "production"`, causing internal file paths, framework traces, and logic to be exposed when `NODE_ENV` was unset, undefined, or set to other values (e.g., "staging", "test").
+**Learning:** Default-allow conditionals (`process.env.NODE_ENV === 'production' ? null : err.stack`) violate fail-secure design principles. In real-world deployments or misconfigured containers, `NODE_ENV` is frequently unset or misspelled, exposing sensitive operational internals to clients.
+**Prevention:** Invert the check to explicitly opt-in: only attach `stack` when `process.env.NODE_ENV === 'development'`. For all other environments and defaults, keep error responses strictly limited to sanitized messages without stack traces.

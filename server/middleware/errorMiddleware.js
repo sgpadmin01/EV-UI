@@ -7,10 +7,18 @@ const notFound = (req, res, next) => {
 const errorHandler = (err, req, res, next) => {
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   res.status(statusCode);
-  res.json({
+
+  // Security: Fail securely by only exposing stack traces when explicitly in development.
+  // When NODE_ENV is unset, production, test, or staging, stack traces must not be leaked to clients.
+  const response = {
     message: err.message,
-    stack: process.env.NODE_ENV === "production" ? null : err.stack,
-  });
+  };
+
+  if (process.env.NODE_ENV === "development") {
+    response.stack = err.stack;
+  }
+
+  res.json(response);
 };
 
 export { notFound, errorHandler };
