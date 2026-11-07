@@ -1085,15 +1085,33 @@
 
     function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
+    // Bolt ⚡ Optimization: Dirty-check state to avoid redundant DOM mutations and style reflows on high-frequency rAF ticks
+    let lastRenderedAngle = null;
+    let lastRenderedOffset = null;
+    let lastRenderedSpeed = null;
+
     function renderGauge(speed) {
       const fraction = Math.max(0, Math.min(1, (speed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED)));
       const angle = MIN_ANGLE + fraction * (MAX_ANGLE - MIN_ANGLE);
-      if (gaugeNeedle) gaugeNeedle.style.transform = `rotate(${angle}deg)`;
-      const offset = OFFSET_EMPTY - fraction * ARC_FILL_LENGTH;
-      if (gaugeArc) gaugeArc.style.strokeDashoffset = offset;
+      // Needle transform dirty check (quantize to 0.1 deg to avoid sub-pixel layout thrash)
+      const roundedAngle = Math.round(angle * 10) / 10;
+      if (gaugeNeedle && lastRenderedAngle !== roundedAngle) {
+        lastRenderedAngle = roundedAngle;
+        gaugeNeedle.style.transform = `rotate(${roundedAngle}deg)`;
+      }
+      // SVG strokeDashoffset dirty check
+      const offset = Math.round((OFFSET_EMPTY - fraction * ARC_FILL_LENGTH) * 10) / 10;
+      if (gaugeArc && lastRenderedOffset !== offset) {
+        lastRenderedOffset = offset;
+        gaugeArc.style.strokeDashoffset = offset;
+      }
+      // Speed and RPM text content dirty check
       const roundedSpeed = Math.round(speed);
-      if (speedText) speedText.textContent = roundedSpeed;
-      if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      if (lastRenderedSpeed !== roundedSpeed) {
+        lastRenderedSpeed = roundedSpeed;
+        if (speedText) speedText.textContent = roundedSpeed;
+        if (rpmText) rpmText.textContent = roundedSpeed * 42;
+      }
     }
 
     function updateSpeed(newSpeed, duration = 450) {
