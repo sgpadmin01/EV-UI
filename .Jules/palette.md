@@ -1,0 +1,3 @@
+## 2025-05-18 - Keyboard Focus Indicators and Icon Button Accessibility in Embedded HMI
+**Learning:** Embedded touch interfaces often strip or omit default CSS outline styles (`outline: none`), which leaves keyboard, rotary encoder, and assistive device users with zero visual feedback on focused buttons and navigation tabs. Furthermore, icon-only action buttons (such as map zoom controls) lack accessible screen-reader names without explicit `aria-label` attributes.
+**Action:** Always provide dedicated `:focus-visible` styles matching the system high-contrast accent (`var(--accent-primary)`) on all interactive buttons, inputs, tabs, and toggles, and enforce explicit `aria-label` attributes on every icon-only control.
