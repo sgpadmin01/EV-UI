@@ -1,0 +1,4 @@
+## 2026-11-07 - Inverted Environment Check for Sensitive Stack Trace Exposure
+**Vulnerability:** The error handler previously checked `process.env.NODE_ENV === "production" ? null : err.stack`. In environments where `NODE_ENV` is unset, default, staging, or test, this leaked full stack traces including internal system file paths, framework internals, and database driver details.
+**Learning:** Checking for production as an opt-out fails open instead of failing securely. If the environment variable is not explicitly configured or gets dropped during deployment container initialization, the system defaults to leaking sensitive diagnostic data.
+**Prevention:** Always fail securely by using positive opt-in conditions for sensitive operations or debug outputs (e.g. `process.env.NODE_ENV === "development"`).
