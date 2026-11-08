@@ -1,0 +1,3 @@
+## 2025-05-18 - Keyboard Focus and ARIA Association on Custom Toggle Switches
+**Learning:** Custom styled checkboxes with `opacity: 0` inside custom sliders completely hide the browser's default focus ring during keyboard navigation (Tab), leaving keyboard and assistive technology users unable to see or identify the active control. Furthermore, disconnected labels prevent screen readers from announcing toggle context.
+**Action:** Always project `:focus-visible` onto the adjacent sibling element (`.hmi-toggle input:focus-visible + .hmi-toggle-slider`) with a high-contrast focus outline, and associate toggle inputs with setting title headers using `aria-labelledby`.
