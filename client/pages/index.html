@@ -1046,12 +1046,17 @@
       if (activeBtn) activeBtn.classList.add('active');
     }
 
-    // Real-Time Clock
+    // Real-Time Clock with Cache Guard (only updates DOM when HH:MM string changes)
+    let lastClockTime = "";
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('hmi-clock').textContent = `${h}:${m}`;
+      const timeStr = `${h}:${m}`;
+      if (lastClockTime !== timeStr) {
+        document.getElementById('hmi-clock').textContent = timeStr;
+        lastClockTime = timeStr;
+      }
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -1085,15 +1090,34 @@
 
     function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
+    // Gauge cache guards to prevent DOM writes when visual values are unchanged
+    let lastAngle = null;
+    let lastOffset = null;
+    let lastRoundedSpeed = null;
+    let lastRpm = null;
+
     function renderGauge(speed) {
       const fraction = Math.max(0, Math.min(1, (speed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED)));
       const angle = MIN_ANGLE + fraction * (MAX_ANGLE - MIN_ANGLE);
-      if (gaugeNeedle) gaugeNeedle.style.transform = `rotate(${angle}deg)`;
+      if (gaugeNeedle && lastAngle !== angle) {
+        gaugeNeedle.style.transform = `rotate(${angle}deg)`;
+        lastAngle = angle;
+      }
       const offset = OFFSET_EMPTY - fraction * ARC_FILL_LENGTH;
-      if (gaugeArc) gaugeArc.style.strokeDashoffset = offset;
+      if (gaugeArc && lastOffset !== offset) {
+        gaugeArc.style.strokeDashoffset = offset;
+        lastOffset = offset;
+      }
       const roundedSpeed = Math.round(speed);
-      if (speedText) speedText.textContent = roundedSpeed;
-      if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      if (speedText && lastRoundedSpeed !== roundedSpeed) {
+        speedText.textContent = roundedSpeed;
+        lastRoundedSpeed = roundedSpeed;
+      }
+      const rpmVal = Math.round(roundedSpeed * 42);
+      if (rpmText && lastRpm !== rpmVal) {
+        rpmText.textContent = rpmVal;
+        lastRpm = rpmVal;
+      }
     }
 
     function updateSpeed(newSpeed, duration = 450) {
@@ -1174,13 +1198,28 @@
     const effEl = document.getElementById('dash-efficiency');
     const effBarEl = document.getElementById('eff-bar-fill');
 
+    // Telemetry cache guards to prevent layout thrashing and redundant DOM writes
+    let lastOdoText = "";
+    let lastTripText = "";
+    let lastEffText = "";
+    let lastEffBarWidth = "";
+
     function resetTrip() {
       trip = 0.0;
       sessionDistance = 0.0;
       sessionEnergy = 0.0;
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
-      if (effEl) effEl.textContent = '0.0';
-      if (effBarEl) effBarEl.style.width = '0%';
+      if (tripEl) {
+        tripEl.textContent = '0.0';
+        lastTripText = '0.0';
+      }
+      if (effEl) {
+        effEl.textContent = '0.0';
+        lastEffText = '0.0';
+      }
+      if (effBarEl) {
+        effBarEl.style.width = '0%';
+        lastEffBarWidth = '0%';
+      }
     }
 
     setInterval(() => {
@@ -1189,11 +1228,31 @@
       trip += dist;
       sessionDistance += dist;
       sessionEnergy += 0.0025; /* simulated continuous draw */
-      if (odometerEl) odometerEl.textContent = odometer.toFixed(1);
-      if (tripEl) tripEl.textContent = trip.toFixed(1);
+
+      const odoText = odometer.toFixed(1);
+      if (odometerEl && lastOdoText !== odoText) {
+        odometerEl.textContent = odoText;
+        lastOdoText = odoText;
+      }
+
+      const tripText = trip.toFixed(1);
+      if (tripEl && lastTripText !== tripText) {
+        tripEl.textContent = tripText;
+        lastTripText = tripText;
+      }
+
       const eff = sessionEnergy > 0 ? sessionDistance / sessionEnergy : 0;
-      if (effEl) effEl.textContent = eff.toFixed(1);
-      if (effBarEl) effBarEl.style.width = Math.min(100, (eff / 12) * 100) + '%';
+      const effText = eff.toFixed(1);
+      if (effEl && lastEffText !== effText) {
+        effEl.textContent = effText;
+        lastEffText = effText;
+      }
+
+      const effBarWidth = Math.min(100, (eff / 12) * 100) + '%';
+      if (effBarEl && lastEffBarWidth !== effBarWidth) {
+        effBarEl.style.width = effBarWidth;
+        lastEffBarWidth = effBarWidth;
+      }
     }, 1000);
   </script>
 </body>
