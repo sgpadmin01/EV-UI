@@ -14,6 +14,9 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Security Hardening: Disable 'X-Powered-By' header to prevent framework fingerprinting
+app.disable("x-powered-by");
+
 connectDB();
 
 app.use(cors());
