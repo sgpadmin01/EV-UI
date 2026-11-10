@@ -1046,12 +1046,18 @@
       if (activeBtn) activeBtn.classList.add('active');
     }
 
-    // Real-Time Clock
+    // Real-Time Clock - Caches DOM element & dirty-checks to avoid redundant text layout reflows
+    const hmiClockEl = document.getElementById('hmi-clock');
+    let lastClockDisplay = '';
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('hmi-clock').textContent = `${h}:${m}`;
+      const timeStr = `${h}:${m}`;
+      if (hmiClockEl && timeStr !== lastClockDisplay) {
+        lastClockDisplay = timeStr;
+        hmiClockEl.textContent = timeStr;
+      }
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -1082,6 +1088,8 @@
     const rpmText = document.getElementById('dash-rpm');
 
     let currentSpeedVal = 0; let targetSpeedVal = 0; let animationFrameId = null; let animStartTime = null; let animStartSpeed = 0;
+    // Dirty-check cache for gauge text elements to prevent redundant DOM mutations and text layout reflows during 60fps animations
+    let lastSpeedDisplay = null;
 
     function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
@@ -1092,8 +1100,11 @@
       const offset = OFFSET_EMPTY - fraction * ARC_FILL_LENGTH;
       if (gaugeArc) gaugeArc.style.strokeDashoffset = offset;
       const roundedSpeed = Math.round(speed);
-      if (speedText) speedText.textContent = roundedSpeed;
-      if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      if (roundedSpeed !== lastSpeedDisplay) {
+        lastSpeedDisplay = roundedSpeed;
+        if (speedText) speedText.textContent = roundedSpeed;
+        if (rpmText) rpmText.textContent = Math.round(roundedSpeed * 42);
+      }
     }
 
     function updateSpeed(newSpeed, duration = 450) {
