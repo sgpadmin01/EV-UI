@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import connectDB from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
+import securityHeaders from "./middleware/securityHeaders.js";
 
 dotenv.config();
 
@@ -14,7 +15,13 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Disable technology stack reconnaissance header
+app.disable("x-powered-by");
+
 connectDB();
+
+// Apply defensive security headers early in the pipeline
+app.use(securityHeaders);
 
 app.use(cors());
 app.use(express.json());
