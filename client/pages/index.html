@@ -881,13 +881,13 @@
 
             <div class="hmi-card">
               <div class="hmi-card-header">
-                <span class="hmi-label">Regenerative Braking Level</span>
+                <span class="hmi-label" id="regen-label">Regenerative Braking Level</span>
               </div>
-              <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:var(--space-xs); margin-top:14px;">
-                <button class="hmi-btn" style="min-width:auto;">OFF</button>
-                <button class="hmi-btn" style="min-width:auto;">LVL 1</button>
-                <button class="hmi-btn primary" style="min-width:auto;">LVL 2</button>
-                <button class="hmi-btn" style="min-width:auto;">LVL 3</button>
+              <div role="radiogroup" aria-labelledby="regen-label" id="regen-group" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:var(--space-xs); margin-top:14px;">
+                <button type="button" role="radio" aria-checked="false" class="hmi-btn" style="min-width:auto;" onclick="setRegenLevel(this)">OFF</button>
+                <button type="button" role="radio" aria-checked="false" class="hmi-btn" style="min-width:auto;" onclick="setRegenLevel(this)">LVL 1</button>
+                <button type="button" role="radio" aria-checked="true" class="hmi-btn primary" style="min-width:auto;" onclick="setRegenLevel(this)">LVL 2</button>
+                <button type="button" role="radio" aria-checked="false" class="hmi-btn" style="min-width:auto;" onclick="setRegenLevel(this)">LVL 3</button>
               </div>
 
               <div class="hmi-toggle-wrapper" style="margin-top:14px;">
@@ -1062,6 +1062,17 @@
     if (brightnessSlider && brightnessVal) {
       brightnessSlider.addEventListener('input', (e) => {
         brightnessVal.textContent = `${e.target.value}%`;
+      });
+    }
+
+    // Regenerative Braking Level Selector
+    function setRegenLevel(targetBtn) {
+      const group = document.getElementById('regen-group');
+      if (!group || !targetBtn) return;
+      group.querySelectorAll('button[role="radio"]').forEach(btn => {
+        const isSelected = btn === targetBtn;
+        btn.classList.toggle('primary', isSelected);
+        btn.setAttribute('aria-checked', isSelected ? 'true' : 'false');
       });
     }
 
