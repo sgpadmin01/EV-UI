@@ -1,0 +1,3 @@
+## 2026-03-30 - Framework-less HMI Animation Loop Dirty-Checking
+**Learning:** In vanilla JS HMI dashboards running high-frequency requestAnimationFrame or setInterval loops, numerical metrics displayed in the DOM (such as speed and RPM) undergo float transitions where the rounded integer representation remains unchanged across multiple consecutive frames. Mutating `element.textContent` on every frame triggers redundant DOM operations and browser layout recalculations.
+**Action:** Cache previous integer values and DOM node references outside the animation loop; compare new values against cached values before mutating `element.textContent`.
